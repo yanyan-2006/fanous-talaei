@@ -1532,5 +1532,485 @@
       </button>
 
 
-      <div
-        class="product-modal-ima
+    <div
+        class="product-modal-image"
+        id="modal-image"
+      >
+        💡
+      </div>
+
+
+      <div class="product-modal-info">
+
+        <div
+          class="product-category"
+          id="modal-category"
+        ></div>
+
+
+        <h2
+          id="modal-name"
+        ></h2>
+
+
+        <p
+          class="product-modal-description"
+          id="modal-description"
+        ></p>
+
+
+        <div
+          class="product-modal-price"
+          id="modal-price"
+        ></div>
+
+
+        <div
+          class="product-modal-stock"
+          id="modal-stock"
+        ></div>
+
+
+        <button
+          class="add-to-cart-button"
+          onclick="addToCart()"
+        >
+          افزودن به سبد خرید
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =========================
+       ABOUT
+  ========================= -->
+
+  <section
+    class="about"
+    id="about"
+  >
+
+    <div class="about-inner">
+
+      <h2>
+        فانوس طلایی ادگی
+      </h2>
+
+
+      <p>
+
+        ما در فانوس طلایی تلاش می‌کنیم
+        محصولات روشنایی و لوازم برقی
+        باکیفیت و کاربردی را با انتخابی
+        متنوع در اختیار شما قرار دهیم.
+
+        برای ما، نور فقط روشنایی نیست؛
+        بخشی از زیبایی فضاست.
+
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       CONTACT
+  ========================= -->
+
+  <section
+    class="contact"
+    id="contact"
+  >
+
+    <h2>
+      اطلاعات تماس
+    </h2>
+
+
+    <div class="contact-grid">
+
+
+      <div class="contact-card">
+
+        <div class="icon">
+          ☎
+        </div>
+
+
+        <h3>
+          تماس با ما
+        </h3>
+
+
+        <p>
+
+          <span class="phone-number">
+            ۰۹۱۲۲۳۷۸۵۷۷
+          </span>
+
+
+          <span class="phone-number">
+            ۰۹۱۲۴۳۰۳۸۰۴
+          </span>
+
+        </p>
+
+      </div>
+
+
+
+      <div class="contact-card">
+
+        <div class="icon">
+          ✦
+        </div>
+
+
+        <h3>
+          آدرس فروشگاه
+        </h3>
+
+
+        <p>
+
+          پرند، فاز صفر،
+          بلوار چهارباغ امام خمینی،
+          نبش نقش جهان ۲،
+          مجتمع تجاری پارادیس،
+          طبقه همکف، واحد ۲۸
+
+        </p>
+
+      </div>
+
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       FOOTER
+  ========================= -->
+
+  <footer>
+
+    <div class="footer-logo">
+      فانوس طلایی ادگی
+    </div>
+
+
+    <p>
+      تجهیزات روشنایی و لوازم برقی
+    </p>
+
+  </footer>
+
+
+
+  <!-- =========================
+       PRODUCTS DATABASE
+  ========================= -->
+
+  <script src="products.js"></script>
+
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================= -->
+
+  <script>
+
+    const container =
+      document.getElementById(
+        "products-container"
+      );
+
+
+    let selectedProduct = null;
+
+
+    /* =========================
+       DISPLAY PRODUCTS
+    ========================= */
+
+    function displayProducts(list) {
+
+      container.innerHTML = "";
+
+
+      list.forEach(product => {
+
+        const card =
+          document.createElement("div");
+
+
+        card.className = "product";
+
+
+        card.dataset.name =
+          product.name;
+
+
+        card.innerHTML = `
+
+          <div class="product-image">
+            ${product.image}
+          </div>
+
+
+          <div class="product-info">
+
+            <div class="product-category">
+              ${product.category}
+            </div>
+
+
+            <h3>
+              ${product.name}
+            </h3>
+
+
+            <div class="product-description">
+              ${product.description}
+            </div>
+
+
+            <div class="product-bottom">
+
+              <div class="price">
+                ${product.price} تومان
+              </div>
+
+
+              <div class="availability">
+                ${
+                  product.stock > 0
+                    ? "موجود"
+                    : "ناموجود"
+                }
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
+
+
+        card.addEventListener(
+          "click",
+          function() {
+            openProduct(product);
+          }
+        );
+
+
+        container.appendChild(card);
+
+      });
+
+    }
+
+
+    /* =========================
+       SEARCH
+    ========================= */
+
+    function searchProducts() {
+
+      const searchInput =
+        document.getElementById("search");
+
+
+      const searchValue =
+        searchInput.value
+          .toLowerCase()
+          .trim();
+
+
+      const filtered =
+        products.filter(product => {
+
+          return product.name
+            .toLowerCase()
+            .includes(searchValue);
+
+        });
+
+
+      displayProducts(filtered);
+
+    }
+
+
+    /* =========================
+       CATEGORY FILTER
+    ========================= */
+
+    function filterCategory(category) {
+
+      const filtered =
+        products.filter(product => {
+
+          return product.category === category;
+
+        });
+
+
+      displayProducts(filtered);
+
+
+      document
+        .getElementById("products")
+        .scrollIntoView({
+          behavior: "smooth"
+        });
+
+    }
+
+
+    /* =========================
+       SHOW ALL PRODUCTS
+    ========================= */
+
+    function showAllProducts() {
+
+      document.getElementById("search").value = "";
+
+      displayProducts(products);
+
+
+      document
+        .getElementById("products")
+        .scrollIntoView({
+          behavior: "smooth"
+        });
+
+    }
+
+
+    /* =========================
+       OPEN PRODUCT
+    ========================= */
+
+    function openProduct(product) {
+
+      selectedProduct = product;
+
+
+      document.getElementById(
+        "modal-name"
+      ).textContent =
+        product.name;
+
+
+      document.getElementById(
+        "modal-category"
+      ).textContent =
+        product.category;
+
+
+      document.getElementById(
+        "modal-description"
+      ).textContent =
+        product.description;
+
+
+      document.getElementById(
+        "modal-price"
+      ).textContent =
+        product.price + " تومان";
+
+
+      document.getElementById(
+        "modal-stock"
+      ).textContent =
+        product.stock > 0
+          ? "موجود در انبار"
+          : "ناموجود";
+
+
+      document.getElementById(
+        "modal-image"
+      ).innerHTML =
+        product.image;
+
+
+      document
+        .getElementById("product-modal")
+        .classList.add("active");
+
+    }
+
+
+    /* =========================
+       CLOSE PRODUCT
+    ========================= */
+
+    function closeProduct(event) {
+
+      if (
+        event &&
+        event.target !== event.currentTarget
+      ) {
+        return;
+      }
+
+
+      document
+        .getElementById("product-modal")
+        .classList.remove("active");
+
+    }
+
+
+    /* =========================
+       ADD TO CART
+    ========================= */
+
+    function addToCart() {
+
+      if (!selectedProduct) {
+        return;
+      }
+
+
+      if (selectedProduct.stock <= 0) {
+
+        alert(
+          "این محصول در حال حاضر ناموجود است."
+        );
+
+        return;
+      }
+
+
+      alert(
+        "محصول به سبد خرید اضافه شد."
+      );
+
+    }
+
+
+    /* =========================
+       INITIAL PRODUCTS
+    ========================= */
+
+    displayProducts(products);
+
+  </script>
+
+
+</body>
+
+</html>
