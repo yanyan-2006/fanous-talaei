@@ -41,7 +41,6 @@
       text-decoration: none;
     }
 
-
     /* =========================
        HEADER
     ========================= */
@@ -64,9 +63,6 @@
       justify-content: space-between;
       gap: 25px;
     }
-
-
-    /* LOGO */
 
     .brand {
       display: flex;
@@ -118,8 +114,6 @@
         0 0 8px rgba(241, 207, 88, 0.25);
     }
 
-    /* decorative lights around name */
-
     .brand-name::before {
       content: "✦  ·  ✧";
       position: absolute;
@@ -144,9 +138,6 @@
         0 0 7px var(--gold-light);
     }
 
-
-    /* NAVIGATION */
-
     nav {
       display: flex;
       gap: 25px;
@@ -161,7 +152,6 @@
     nav a:hover {
       color: var(--lemon);
     }
-
 
     /* =========================
        HERO
@@ -195,9 +185,6 @@
       overflow: hidden;
     }
 
-
-    /* tiny decorative lights */
-
     .hero::before {
       content: "✦   ·       ✧        ·   ✦";
       position: absolute;
@@ -224,7 +211,6 @@
       text-shadow:
         0 0 8px var(--lemon);
     }
-
 
     .hero-inner {
       max-width: 1200px;
@@ -275,7 +261,6 @@
       transform: translateY(-2px);
     }
 
-
     /* =========================
        SECTIONS
     ========================= */
@@ -303,7 +288,6 @@
       color: var(--gray);
       font-size: 13px;
     }
-
 
     /* =========================
        CATEGORIES
@@ -360,7 +344,6 @@
       margin-top: 5px;
     }
 
-
     /* =========================
        SEARCH
     ========================= */
@@ -371,19 +354,12 @@
 
     .search-box input {
       width: 100%;
-
       background: #151515;
-
       border: 1px solid #333;
-
       color: white;
-
       padding: 16px 20px;
-
       border-radius: 5px;
-
       outline: none;
-
       font-family: inherit;
     }
 
@@ -392,7 +368,6 @@
       box-shadow:
         0 0 12px rgba(214,169,40,0.1);
     }
-
 
     /* =========================
        PRODUCTS
@@ -406,22 +381,15 @@
 
     .product {
       background: #151515;
-
       border: 1px solid #282828;
-
       border-radius: 6px;
-
       overflow: hidden;
-
       transition: 0.3s;
     }
 
     .product:hover {
       transform: translateY(-5px);
-
-      border-color:
-        rgba(214,169,40,0.7);
-
+      border-color: rgba(214,169,40,0.7);
       box-shadow:
         0 12px 30px rgba(0,0,0,0.35);
     }
@@ -443,12 +411,10 @@
         );
 
       display: flex;
-
       justify-content: center;
       align-items: center;
 
       color: var(--gold-light);
-
       font-size: 50px;
     }
 
@@ -492,27 +458,20 @@
       color: #9fdb75;
     }
 
-
     /* =========================
        ABOUT
     ========================= */
 
     .about {
       background: #111;
-
-      border-top:
-        1px solid #222;
-
-      border-bottom:
-        1px solid #222;
+      border-top: 1px solid #222;
+      border-bottom: 1px solid #222;
     }
 
     .about-inner {
       max-width: 850px;
       margin: auto;
-
       padding: 80px 25px;
-
       text-align: center;
     }
 
@@ -527,7 +486,6 @@
       font-size: 15px;
     }
 
-
     /* =========================
        CONTACT
     ========================= */
@@ -535,9 +493,7 @@
     .contact {
       max-width: 900px;
       margin: auto;
-
       padding: 75px 25px;
-
       text-align: center;
     }
 
@@ -549,22 +505,15 @@
 
     .contact-grid {
       display: grid;
-
-      grid-template-columns:
-        repeat(2, 1fr);
-
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
     }
 
     .contact-card {
       background: #141414;
-
       border: 1px solid #292929;
-
       border-radius: 7px;
-
       padding: 25px;
-
       transition: 0.3s;
     }
 
@@ -601,18 +550,14 @@
       color: white;
     }
 
-
     /* =========================
        FOOTER
     ========================= */
 
     footer {
       padding: 45px 25px;
-
       text-align: center;
-
       background: #080808;
-
       border-top:
         1px solid rgba(214,169,40,0.15);
     }
@@ -631,7 +576,6 @@
       font-size: 12px;
     }
 
-
     /* =========================
        MOBILE
     ========================= */
@@ -643,13 +587,11 @@
       }
 
       .categories {
-        grid-template-columns:
-          repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr);
       }
 
       .products {
-        grid-template-columns:
-          repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr);
       }
 
       .product-image {
@@ -660,7 +602,6 @@
         grid-template-columns: 1fr;
       }
     }
-
 
     @media (max-width: 500px) {
 
@@ -694,8 +635,7 @@
       }
 
       .categories {
-        grid-template-columns:
-          1fr 1fr;
+        grid-template-columns: 1fr 1fr;
       }
 
       .product-image {
@@ -727,13 +667,9 @@
   </style>
 </head>
 
-
 <body>
 
-
-  <!-- =========================
-       HEADER
-  ========================= -->
+  <!-- HEADER -->
 
   <header>
 
@@ -748,7 +684,6 @@
         </div>
 
       </a>
-
 
       <nav>
 
@@ -777,10 +712,7 @@
   </header>
 
 
-
-  <!-- =========================
-       HERO
-  ========================= -->
+  <!-- HERO -->
 
   <section class="hero" id="home">
 
@@ -791,23 +723,17 @@
       </div>
 
       <h1>
-
         روشنایی
-
         <br>
-
         <span>
           با کیفیت متفاوت
         </span>
-
       </h1>
 
       <p>
-
         مجموعه‌ای از محصولات روشنایی
         و لوازم برقی برای خانه‌ها،
         فروشگاه‌ها و فضاهای مدرن.
-
       </p>
 
       <a
@@ -822,10 +748,7 @@
   </section>
 
 
-
-  <!-- =========================
-       CATEGORIES
-  ========================= -->
+  <!-- CATEGORIES -->
 
   <section
     class="section"
@@ -848,9 +771,7 @@
 
     </div>
 
-
     <div class="categories">
-
 
       <div class="category">
 
@@ -868,7 +789,6 @@
 
       </div>
 
-
       <div class="category">
 
         <div>
@@ -884,7 +804,6 @@
         </div>
 
       </div>
-
 
       <div class="category">
 
@@ -902,7 +821,6 @@
 
       </div>
 
-
       <div class="category">
 
         <div>
@@ -919,31 +837,54 @@
 
       </div>
 
-
     </div>
 
   </section>
 
 
+  <!-- PRODUCTS -->
 
-  <!-- =========================
-       PRODUCTS
-  ========================= -->
+  <section
+    class="section"
+    id="products"
+  >
 
-  <div
-  class="products"
-  id="products-container"
->
-  </div>
+    <div class="section-title">
 
-  
+      <div>
+
+        <h2>
+          محصولات
+        </h2>
+
+        <p>
+          محصولات فانوس طلایی
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="search-box">
+
+      <input
+        type="text"
+        id="search"
+        placeholder="جستجوی محصول..."
+        oninput="searchProducts()"
+      >
+
+    </div>
+
+    <div
+      class="products"
+      id="products-container"
+    ></div>
+
   </section>
 
 
-
-  <!-- =========================
-       ABOUT
-  ========================= -->
+  <!-- ABOUT -->
 
   <section
     class="about"
@@ -973,10 +914,7 @@
   </section>
 
 
-
-  <!-- =========================
-       CONTACT
-  ========================= -->
+  <!-- CONTACT -->
 
   <section
     class="contact"
@@ -987,9 +925,7 @@
       اطلاعات تماس
     </h2>
 
-
     <div class="contact-grid">
-
 
       <div class="contact-card">
 
@@ -1015,8 +951,6 @@
 
       </div>
 
-
-
       <div class="contact-card">
 
         <div class="icon">
@@ -1039,16 +973,12 @@
 
       </div>
 
-
     </div>
 
   </section>
 
 
-
-  <!-- =========================
-       FOOTER
-  ========================= -->
+  <!-- FOOTER -->
 
   <footer>
 
@@ -1063,12 +993,69 @@
   </footer>
 
 
+  <!-- PRODUCTS SCRIPT -->
 
-  <!-- =========================
-       SEARCH SCRIPT
-  ========================= -->
+  <script src="products.js"></script>
 
   <script>
+
+    const container =
+      document.getElementById("products-container");
+
+    products.forEach(product => {
+
+      const card =
+        document.createElement("div");
+
+      card.className = "product";
+
+      card.dataset.name =
+        product.name;
+
+      card.innerHTML = `
+
+        <div class="product-image">
+          ${product.image}
+        </div>
+
+        <div class="product-info">
+
+          <div class="product-category">
+            ${product.category}
+          </div>
+
+          <h3>
+            ${product.name}
+          </h3>
+
+          <div class="product-description">
+            ${product.description}
+          </div>
+
+          <div class="product-bottom">
+
+            <div class="price">
+              ${product.price} تومان
+            </div>
+
+            <div class="availability">
+              ${
+                product.stock > 0
+                  ? "موجود"
+                  : "ناموجود"
+              }
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+      container.appendChild(card);
+
+    });
+
 
     function searchProducts() {
 
@@ -1076,19 +1063,18 @@
         document
           .getElementById("search")
           .value
-          .toLowerCase();
+          .toLowerCase()
+          .trim();
 
-      const products =
+      const productCards =
         document.querySelectorAll(".product");
 
-
-      products.forEach(function(product) {
+      productCards.forEach(function(product) {
 
         const name =
           product
             .getAttribute("data-name")
             .toLowerCase();
-
 
         if (name.includes(searchValue)) {
 
@@ -1104,52 +1090,7 @@
 
     }
 
- <script src="products.js"></script>
-  <script>
-  const container = document.getElementById("products-container");
-
-  products.forEach(product => {
-    const card = document.createElement("div");
-
-    card.className = "product";
-    card.dataset.name = product.name;
-
-    card.innerHTML = `
-      <div class="product-image">
-        ${product.image}
-      </div>
-
-      <div class="product-info">
-
-        <div class="product-category">
-          ${product.category}
-        </div>
-
-        <h3>
-          ${product.name}
-        </h3>
-
-        <div class="product-description">
-          ${product.description}
-        </div>
-
-        <div class="product-bottom">
-
-          <div class="price">
-            ${product.price} تومان
-          </div>
-
-          <div class="availability">
-            ${product.stock > 0 ? "موجود" : "ناموجود"}
-          </div>
-
-        </div>
-
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
   </script>
-  
+
 </body>
+</html>
