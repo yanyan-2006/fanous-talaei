@@ -1105,4 +1105,51 @@
     }
 
  <script src="products.js"></script>
+  <script>
+  const container = document.getElementById("products-container");
+
+  products.forEach(product => {
+    const card = document.createElement("div");
+
+    card.className = "product";
+    card.dataset.name = product.name;
+
+    card.innerHTML = `
+      <div class="product-image">
+        ${product.image}
+      </div>
+
+      <div class="product-info">
+
+        <div class="product-category">
+          ${product.category}
+        </div>
+
+        <h3>
+          ${product.name}
+        </h3>
+
+        <div class="product-description">
+          ${product.description}
+        </div>
+
+        <div class="product-bottom">
+
+          <div class="price">
+            ${product.price} تومان
+          </div>
+
+          <div class="availability">
+            ${product.stock > 0 ? "موجود" : "ناموجود"}
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+  </script>
+  
 </body>
