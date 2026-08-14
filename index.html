@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,6 +42,7 @@
       text-decoration: none;
     }
 
+
     /* =========================
        HEADER
     ========================= */
@@ -63,6 +65,9 @@
       justify-content: space-between;
       gap: 25px;
     }
+
+
+    /* LOGO */
 
     .brand {
       display: flex;
@@ -138,6 +143,9 @@
         0 0 7px var(--gold-light);
     }
 
+
+    /* NAVIGATION */
+
     nav {
       display: flex;
       gap: 25px;
@@ -152,6 +160,7 @@
     nav a:hover {
       color: var(--lemon);
     }
+
 
     /* =========================
        HERO
@@ -261,6 +270,7 @@
       transform: translateY(-2px);
     }
 
+
     /* =========================
        SECTIONS
     ========================= */
@@ -288,6 +298,7 @@
       color: var(--gray);
       font-size: 13px;
     }
+
 
     /* =========================
        CATEGORIES
@@ -344,6 +355,7 @@
       margin-top: 5px;
     }
 
+
     /* =========================
        SEARCH
     ========================= */
@@ -369,6 +381,7 @@
         0 0 12px rgba(214,169,40,0.1);
     }
 
+
     /* =========================
        PRODUCTS
     ========================= */
@@ -389,7 +402,10 @@
 
     .product:hover {
       transform: translateY(-5px);
-      border-color: rgba(214,169,40,0.7);
+
+      border-color:
+        rgba(214,169,40,0.7);
+
       box-shadow:
         0 12px 30px rgba(0,0,0,0.35);
     }
@@ -458,6 +474,7 @@
       color: #9fdb75;
     }
 
+
     /* =========================
        ABOUT
     ========================= */
@@ -485,6 +502,7 @@
       color: #aaa;
       font-size: 15px;
     }
+
 
     /* =========================
        CONTACT
@@ -519,6 +537,7 @@
 
     .contact-card:hover {
       border-color: var(--gold);
+
       box-shadow:
         0 0 25px rgba(214,169,40,0.08);
     }
@@ -550,6 +569,7 @@
       color: white;
     }
 
+
     /* =========================
        FOOTER
     ========================= */
@@ -575,6 +595,7 @@
       color: #777;
       font-size: 12px;
     }
+
 
     /* =========================
        MOBILE
@@ -602,6 +623,7 @@
         grid-template-columns: 1fr;
       }
     }
+
 
     @media (max-width: 500px) {
 
@@ -667,9 +689,13 @@
   </style>
 </head>
 
+
 <body>
 
-  <!-- HEADER -->
+
+  <!-- =========================
+       HEADER
+  ========================= -->
 
   <header>
 
@@ -684,6 +710,7 @@
         </div>
 
       </a>
+
 
       <nav>
 
@@ -712,7 +739,10 @@
   </header>
 
 
-  <!-- HERO -->
+
+  <!-- =========================
+       HERO
+  ========================= -->
 
   <section class="hero" id="home">
 
@@ -723,17 +753,23 @@
       </div>
 
       <h1>
+
         روشنایی
+
         <br>
+
         <span>
           با کیفیت متفاوت
         </span>
+
       </h1>
 
       <p>
+
         مجموعه‌ای از محصولات روشنایی
         و لوازم برقی برای خانه‌ها،
         فروشگاه‌ها و فضاهای مدرن.
+
       </p>
 
       <a
@@ -748,7 +784,10 @@
   </section>
 
 
-  <!-- CATEGORIES -->
+
+  <!-- =========================
+       CATEGORIES
+  ========================= -->
 
   <section
     class="section"
@@ -771,9 +810,14 @@
 
     </div>
 
+
     <div class="categories">
 
-      <div class="category" onclick="filterCategory('لامپ')">
+
+      <div
+        class="category"
+        onclick="filterCategory('لامپ')"
+      >
 
         <div>
 
@@ -789,7 +833,11 @@
 
       </div>
 
-      <div class="category" onclick="filterCategory('چراغ')">
+
+      <div
+        class="category"
+        onclick="filterCategory('چراغ')"
+      >
 
         <div>
 
@@ -805,7 +853,11 @@
 
       </div>
 
-      <div class="category" onclick="filterCategory('لوستر')">
+
+      <div
+        class="category"
+        onclick="filterCategory('لوستر')"
+      >
 
         <div>
 
@@ -821,7 +873,11 @@
 
       </div>
 
-      <div class="category" onclick="filterCategory('لوازم برقی')">
+
+      <div
+        class="category"
+        onclick="filterCategory('لوازم برقی')"
+      >
 
         <div>
 
@@ -837,12 +893,16 @@
 
       </div>
 
+
     </div>
 
   </section>
 
 
-  <!-- PRODUCTS -->
+
+  <!-- =========================
+       PRODUCTS
+  ========================= -->
 
   <section
     class="section"
@@ -865,6 +925,7 @@
 
     </div>
 
+
     <div class="search-box">
 
       <input
@@ -876,15 +937,20 @@
 
     </div>
 
+
     <div
       class="products"
       id="products-container"
     ></div>
 
+
   </section>
 
 
-  <!-- ABOUT -->
+
+  <!-- =========================
+       ABOUT
+  ========================= -->
 
   <section
     class="about"
@@ -914,7 +980,10 @@
   </section>
 
 
-  <!-- CONTACT -->
+
+  <!-- =========================
+       CONTACT
+  ========================= -->
 
   <section
     class="contact"
@@ -925,7 +994,9 @@
       اطلاعات تماس
     </h2>
 
+
     <div class="contact-grid">
+
 
       <div class="contact-card">
 
@@ -951,6 +1022,8 @@
 
       </div>
 
+
+
       <div class="contact-card">
 
         <div class="icon">
@@ -973,12 +1046,16 @@
 
       </div>
 
+
     </div>
 
   </section>
 
 
-  <!-- FOOTER -->
+
+  <!-- =========================
+       FOOTER
+  ========================= -->
 
   <footer>
 
@@ -993,97 +1070,101 @@
   </footer>
 
 
-  <!-- PRODUCTS SCRIPT -->
+
+  <!-- =========================
+       PRODUCTS SCRIPT
+  ========================= -->
 
   <script src="products.js"></script>
 
+
   <script>
+
+    /* =========================
+       DISPLAY PRODUCTS
+    ========================= */
 
     const container =
       document.getElementById("products-container");
 
-    products.forEach(product => {
 
-      const card =
-        document.createElement("div");
+    function displayProducts(list) {
 
-      card.className = "product";
+      container.innerHTML = "";
 
-      card.dataset.name =
-        product.name;
 
-      card.innerHTML = `
+      list.forEach(product => {
 
-        <div class="product-image">
-          ${product.image}
-        </div>
+        const card =
+          document.createElement("div");
 
-        <div class="product-info">
 
-          <div class="product-category">
-            ${product.category}
+        card.className = "product";
+
+
+        card.dataset.name =
+          product.name;
+
+
+        card.innerHTML = `
+
+          <div class="product-image">
+            ${product.image}
           </div>
 
-          <h3>
-            ${product.name}
-          </h3>
+          <div class="product-info">
 
-          <div class="product-description">
-            ${product.description}
-          </div>
-
-          <div class="product-bottom">
-
-            <div class="price">
-              ${product.price} تومان
+            <div class="product-category">
+              ${product.category}
             </div>
 
-            <div class="availability">
-              ${
-                product.stock > 0
-                  ? "موجود"
-                  : "ناموجود"
-              }
+            <h3>
+              ${product.name}
+            </h3>
+
+            <div class="product-description">
+              ${product.description}
+            </div>
+
+            <div class="product-bottom">
+
+              <div class="price">
+                ${product.price} تومان
+              </div>
+
+              <div class="availability">
+                ${
+                  product.stock > 0
+                    ? "موجود"
+                    : "ناموجود"
+                }
+              </div>
+
             </div>
 
           </div>
 
-        </div>
-
-      `;
-
-      container.appendChild(card);
-
-    });
+        `;
 
 
-    function searchProducts() {function filterCategory(category) {
+        container.appendChild(card);
 
-  const productCards =
-    document.querySelectorAll(".product");
+      });
 
-  productCards.forEach(function(product) {
-
-    const productCategory =
-      product
-        .querySelector(".product-category")
-        .textContent
-        .trim();
-
-    if (productCategory === category) {
-      product.style.display = "";
-    } else {
-      product.style.display = "none";
     }
 
-  });
 
-  document
-    .getElementById("products")
-    .scrollIntoView({
-      behavior: "smooth"
-    });
-    }
+    /* نمایش اولیه همه محصولات */
+
+    displayProducts(products);
+
+
+
+    /* =========================
+       SEARCH
+    ========================= */
+
+    function searchProducts() {
 
       const searchValue =
         document
@@ -1092,31 +1173,50 @@
           .toLowerCase()
           .trim();
 
-      const productCards =
-        document.querySelectorAll(".product");
 
-      productCards.forEach(function(product) {
+      const filteredProducts =
+        products.filter(function(product) {
 
-        const name =
-          product
-            .getAttribute("data-name")
-            .toLowerCase();
+          return product.name
+            .toLowerCase()
+            .includes(searchValue);
 
-        if (name.includes(searchValue)) {
+        });
 
-          product.style.display = "";
 
-        } else {
+      displayProducts(filteredProducts);
 
-          product.style.display = "none";
+    }
 
-        }
 
-      });
+
+    /* =========================
+       CATEGORY FILTER
+    ========================= */
+
+    function filterCategory(category) {
+
+      const filteredProducts =
+        products.filter(function(product) {
+
+          return product.category === category;
+
+        });
+
+
+      displayProducts(filteredProducts);
+
+
+      document
+        .getElementById("products")
+        .scrollIntoView({
+          behavior: "smooth"
+        });
 
     }
 
   </script>
+
 
 </body>
 </html>
