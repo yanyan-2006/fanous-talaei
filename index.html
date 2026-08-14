@@ -2,10 +2,16 @@
 <html lang="fa" dir="rtl">
 
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>فانوس طلایی ادگی</title>
+
 
   <style>
 
@@ -14,6 +20,7 @@
       margin: 0;
       padding: 0;
     }
+
 
     :root {
       --black: #080808;
@@ -26,9 +33,11 @@
       --gray: #a9a9a9;
     }
 
+
     html {
       scroll-behavior: smooth;
     }
+
 
     body {
       background: var(--black);
@@ -36,6 +45,7 @@
       font-family: Tahoma, Arial, sans-serif;
       line-height: 1.8;
     }
+
 
     a {
       color: inherit;
@@ -51,18 +61,26 @@
       position: sticky;
       top: 0;
       z-index: 100;
+
       background: rgba(8, 8, 8, 0.94);
-      border-bottom: 1px solid rgba(214, 169, 40, 0.25);
+
+      border-bottom:
+        1px solid rgba(214, 169, 40, 0.25);
+
       backdrop-filter: blur(12px);
     }
+
 
     .header-inner {
       max-width: 1200px;
       margin: auto;
+
       padding: 17px 25px;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       gap: 25px;
     }
 
@@ -75,70 +93,112 @@
       gap: 12px;
     }
 
+
     .logo-icon {
       position: relative;
+
       width: 32px;
       height: 38px;
+
       border: 2px solid var(--gold-light);
-      border-radius: 5px 5px 8px 8px;
+
+      border-radius:
+        5px 5px 8px 8px;
+
       box-shadow:
         0 0 8px rgba(241, 207, 88, 0.5),
         0 0 20px rgba(241, 207, 88, 0.15);
     }
 
+
     .logo-icon::before {
       content: "";
+
       position: absolute;
+
       width: 18px;
       height: 7px;
-      border: 2px solid var(--gold-light);
+
+      border:
+        2px solid var(--gold-light);
+
       border-bottom: none;
-      border-radius: 10px 10px 0 0;
+
+      border-radius:
+        10px 10px 0 0;
+
       top: -8px;
       left: 5px;
     }
 
+
     .logo-icon::after {
       content: "✦";
+
       position: absolute;
+
       font-size: 15px;
+
       color: var(--lemon);
+
       left: 7px;
       top: 7px;
-      text-shadow: 0 0 8px rgba(234, 255, 61, 0.8);
+
+      text-shadow:
+        0 0 8px rgba(234, 255, 61, 0.8);
     }
+
 
     .brand-name {
       position: relative;
+
       color: var(--gold-light);
+
       font-size: 23px;
+
       font-weight: bold;
+
       letter-spacing: 0.5px;
+
       white-space: nowrap;
+
       text-shadow:
         0 0 8px rgba(241, 207, 88, 0.25);
     }
 
+
     .brand-name::before {
       content: "✦  ·  ✧";
+
       position: absolute;
+
       color: var(--lemon);
+
       font-size: 10px;
+
       right: -55px;
       top: -13px;
+
       opacity: 0.9;
+
       text-shadow:
         0 0 7px var(--lemon),
         0 0 14px var(--lemon);
     }
 
+
     .brand-name::after {
       content: "·  ✦";
+
       position: absolute;
+
       color: var(--gold-light);
+
       font-size: 9px;
+
       left: -35px;
       bottom: -10px;
+
       text-shadow:
         0 0 7px var(--gold-light);
     }
@@ -148,14 +208,19 @@
 
     nav {
       display: flex;
+
       gap: 25px;
+
       color: #ddd;
+
       font-size: 14px;
     }
+
 
     nav a {
       transition: 0.25s;
     }
+
 
     nav a:hover {
       color: var(--lemon);
@@ -168,10 +233,12 @@
 
     .hero {
       min-height: 530px;
+
       display: flex;
       align-items: center;
 
       background:
+
         radial-gradient(
           circle at 20% 50%,
           rgba(234,255,61,0.08),
@@ -191,82 +258,128 @@
         );
 
       position: relative;
+
       overflow: hidden;
     }
 
+
     .hero::before {
       content: "✦   ·       ✧        ·   ✦";
+
       position: absolute;
+
       top: 70px;
       left: 8%;
+
       color: var(--gold-light);
+
       font-size: 13px;
+
       letter-spacing: 8px;
+
       opacity: 0.7;
+
       text-shadow:
         0 0 8px var(--gold),
         0 0 18px var(--gold);
     }
 
+
     .hero::after {
       content: "·      ✦        ·     ✧";
+
       position: absolute;
+
       bottom: 65px;
       right: 8%;
+
       color: var(--lemon);
+
       font-size: 11px;
+
       letter-spacing: 9px;
+
       opacity: 0.65;
+
       text-shadow:
         0 0 8px var(--lemon);
     }
 
+
     .hero-inner {
       max-width: 1200px;
+
       width: 100%;
+
       margin: auto;
+
       padding: 70px 25px;
+
       position: relative;
+
       z-index: 2;
     }
 
+
     .hero-small {
       color: var(--lemon);
+
       letter-spacing: 3px;
+
       font-size: 13px;
+
       margin-bottom: 15px;
     }
 
+
     .hero h1 {
-      font-size: clamp(42px, 8vw, 78px);
+      font-size:
+        clamp(42px, 8vw, 78px);
+
       line-height: 1.1;
+
       color: var(--white);
+
       margin-bottom: 20px;
     }
+
 
     .hero h1 span {
       color: var(--gold-light);
     }
 
+
     .hero p {
       max-width: 560px;
+
       color: #c8c8c8;
+
       font-size: 17px;
+
       margin-bottom: 35px;
     }
 
+
     .hero-button {
       display: inline-block;
+
       padding: 13px 28px;
+
       background: var(--gold);
+
       color: #111;
+
       border-radius: 4px;
+
       font-weight: bold;
+
       transition: 0.3s;
     }
 
+
     .hero-button:hover {
       background: var(--lemon);
+
       transform: translateY(-2px);
     }
 
@@ -277,25 +390,36 @@
 
     .section {
       max-width: 1200px;
+
       margin: auto;
+
       padding: 75px 25px;
     }
 
+
     .section-title {
       display: flex;
+
       justify-content: space-between;
+
       align-items: end;
+
       margin-bottom: 35px;
+
       gap: 20px;
     }
 
+
     .section-title h2 {
       font-size: 30px;
+
       color: var(--gold-light);
     }
 
+
     .section-title p {
       color: var(--gray);
+
       font-size: 13px;
     }
 
@@ -306,9 +430,13 @@
 
     .categories {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
       gap: 15px;
     }
+
 
     .category {
       min-height: 130px;
@@ -323,7 +451,9 @@
       border: 1px solid #292929;
 
       display: flex;
+
       justify-content: center;
+
       align-items: center;
 
       text-align: center;
@@ -335,50 +465,33 @@
       cursor: pointer;
     }
 
+
     .category:hover {
       border-color: var(--gold);
+
       transform: translateY(-4px);
 
       box-shadow:
-        0 10px 30px rgba(214,169,40,0.08);
+        0 10px 30px
+        rgba(214,169,40,0.08);
     }
+
 
     .category h3 {
       color: white;
+
       font-size: 17px;
     }
 
+
     .category span {
       display: block;
+
       color: var(--lemon);
+
       font-size: 11px;
+
       margin-top: 5px;
-    }
-
-
-    /* =========================
-       SEARCH
-    ========================= */
-
-    .search-box {
-      margin-bottom: 30px;
-    }
-
-    .search-box input {
-      width: 100%;
-      background: #151515;
-      border: 1px solid #333;
-      color: white;
-      padding: 16px 20px;
-      border-radius: 5px;
-      outline: none;
-      font-family: inherit;
-    }
-
-    .search-box input:focus {
-      border-color: var(--gold);
-      box-shadow:
-        0 0 12px rgba(214,169,40,0.1);
     }
 
 
@@ -386,19 +499,74 @@
        PRODUCTS
     ========================= */
 
+    .products-section {
+      max-width: 1200px;
+
+      margin: auto;
+
+      padding: 0 25px 75px;
+    }
+
+
+    .search-box {
+      margin-bottom: 30px;
+    }
+
+
+    .search-box input {
+      width: 100%;
+
+      background: #151515;
+
+      border: 1px solid #333;
+
+      color: white;
+
+      padding: 16px 20px;
+
+      border-radius: 5px;
+
+      outline: none;
+
+      font-family: inherit;
+
+      font-size: 14px;
+    }
+
+
+    .search-box input:focus {
+      border-color: var(--gold);
+
+      box-shadow:
+        0 0 12px
+        rgba(214,169,40,0.1);
+    }
+
+
     .products {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
       gap: 20px;
     }
 
+
     .product {
       background: #151515;
+
       border: 1px solid #282828;
+
       border-radius: 6px;
+
       overflow: hidden;
+
       transition: 0.3s;
+
+      cursor: pointer;
     }
+
 
     .product:hover {
       transform: translateY(-5px);
@@ -407,13 +575,16 @@
         rgba(214,169,40,0.7);
 
       box-shadow:
-        0 12px 30px rgba(0,0,0,0.35);
+        0 12px 30px
+        rgba(0,0,0,0.35);
     }
+
 
     .product-image {
       height: 220px;
 
       background:
+
         radial-gradient(
           circle,
           rgba(234,255,61,0.15),
@@ -427,56 +598,293 @@
         );
 
       display: flex;
+
       justify-content: center;
+
       align-items: center;
 
       color: var(--gold-light);
+
       font-size: 50px;
     }
+
+
     .product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: contain;
     }
+
 
     .product-info {
       padding: 20px;
     }
 
+
     .product-category {
       color: var(--lemon);
+
       font-size: 11px;
+
       margin-bottom: 5px;
     }
 
+
     .product h3 {
       font-size: 16px;
+
       margin-bottom: 10px;
     }
 
+
     .product-description {
       color: #999;
+
       font-size: 12px;
+
       min-height: 45px;
     }
 
+
     .product-bottom {
       display: flex;
+
       justify-content: space-between;
+
       align-items: center;
+
       margin-top: 18px;
+
       gap: 10px;
     }
 
+
     .price {
       color: var(--gold-light);
+
       font-weight: bold;
+
       font-size: 15px;
     }
 
+
     .availability {
       font-size: 10px;
+
       color: #9fdb75;
+    }
+
+
+    /* =========================
+       PRODUCT MODAL
+    ========================= */
+
+    .product-modal {
+      position: fixed;
+
+      inset: 0;
+
+      background:
+        rgba(0, 0, 0, 0.75);
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 20px;
+
+      z-index: 1000;
+
+      backdrop-filter: blur(8px);
+    }
+
+
+    .product-modal.active {
+      display: flex;
+    }
+
+
+    .product-modal-content {
+      position: relative;
+
+      width: 100%;
+
+      max-width: 850px;
+
+      background: #151515;
+
+      border:
+        1px solid
+        rgba(214,169,40,0.5);
+
+      border-radius: 8px;
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      overflow: hidden;
+
+      box-shadow:
+        0 20px 70px
+        rgba(0,0,0,0.6);
+    }
+
+
+    .product-modal-close {
+      position: absolute;
+
+      top: 12px;
+
+      right: 15px;
+
+      width: 35px;
+
+      height: 35px;
+
+      border: none;
+
+      background:
+        rgba(0,0,0,0.5);
+
+      color: white;
+
+      font-size: 25px;
+
+      cursor: pointer;
+
+      border-radius: 50%;
+
+      z-index: 2;
+    }
+
+
+    .product-modal-close:hover {
+      color: var(--lemon);
+    }
+
+
+    .product-modal-image {
+      min-height: 420px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 100px;
+
+      background:
+
+        radial-gradient(
+          circle,
+          rgba(234,255,61,0.15),
+          transparent 30%
+        ),
+
+        linear-gradient(
+          145deg,
+          #232323,
+          #0d0d0d
+        );
+    }
+
+
+    .product-modal-image img {
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: contain;
+    }
+
+
+    .product-modal-info {
+      padding: 50px 35px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+    }
+
+
+    .product-modal-info h2 {
+      color: white;
+
+      font-size: 28px;
+
+      margin-bottom: 15px;
+    }
+
+
+    .product-modal-description {
+      color: #aaa;
+
+      font-size: 14px;
+
+      line-height: 2;
+
+      margin-bottom: 25px;
+    }
+
+
+    .product-modal-price {
+      color: var(--gold-light);
+
+      font-size: 23px;
+
+      font-weight: bold;
+
+      margin-bottom: 10px;
+    }
+
+
+    .product-modal-stock {
+      color: #9fdb75;
+
+      font-size: 13px;
+
+      margin-bottom: 25px;
+    }
+
+
+    .add-to-cart-button {
+      width: 100%;
+
+      padding: 14px;
+
+      border: none;
+
+      border-radius: 5px;
+
+      background: var(--gold);
+
+      color: #111;
+
+      font-family: inherit;
+
+      font-weight: bold;
+
+      font-size: 14px;
+
+      cursor: pointer;
+
+      transition: 0.3s;
+    }
+
+
+    .add-to-cart-button:hover {
+      background: var(--lemon);
+
+      transform: translateY(-2px);
     }
 
 
@@ -486,25 +894,38 @@
 
     .about {
       background: #111;
-      border-top: 1px solid #222;
-      border-bottom: 1px solid #222;
+
+      border-top:
+        1px solid #222;
+
+      border-bottom:
+        1px solid #222;
     }
+
 
     .about-inner {
       max-width: 850px;
+
       margin: auto;
+
       padding: 80px 25px;
+
       text-align: center;
     }
 
+
     .about-inner h2 {
       color: var(--gold-light);
+
       margin-bottom: 20px;
+
       font-size: 30px;
     }
 
+
     .about-inner p {
       color: #aaa;
+
       font-size: 15px;
     }
 
@@ -515,62 +936,92 @@
 
     .contact {
       max-width: 900px;
+
       margin: auto;
+
       padding: 75px 25px;
+
       text-align: center;
     }
 
+
     .contact h2 {
       color: var(--gold-light);
+
       font-size: 30px;
+
       margin-bottom: 35px;
     }
 
+
     .contact-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
       gap: 20px;
     }
 
+
     .contact-card {
       background: #141414;
+
       border: 1px solid #292929;
+
       border-radius: 7px;
+
       padding: 25px;
+
       transition: 0.3s;
     }
+
 
     .contact-card:hover {
       border-color: var(--gold);
 
       box-shadow:
-        0 0 25px rgba(214,169,40,0.08);
+        0 0 25px
+        rgba(214,169,40,0.08);
     }
+
 
     .contact-card .icon {
       color: var(--lemon);
+
       font-size: 25px;
+
       margin-bottom: 10px;
 
       text-shadow:
-        0 0 10px rgba(234,255,61,0.4);
+        0 0 10px
+        rgba(234,255,61,0.4);
     }
+
 
     .contact-card h3 {
       color: var(--gold-light);
+
       font-size: 16px;
+
       margin-bottom: 8px;
     }
 
+
     .contact-card p {
       color: #aaa;
+
       font-size: 14px;
+
       line-height: 2;
     }
 
+
     .phone-number {
       direction: ltr;
+
       display: block;
+
       color: white;
     }
 
@@ -581,23 +1032,33 @@
 
     footer {
       padding: 45px 25px;
+
       text-align: center;
+
       background: #080808;
+
       border-top:
-        1px solid rgba(214,169,40,0.15);
+        1px solid
+        rgba(214,169,40,0.15);
     }
+
 
     footer .footer-logo {
       color: var(--gold-light);
+
       font-size: 22px;
+
       margin-bottom: 10px;
 
       text-shadow:
-        0 0 8px rgba(241,207,88,0.2);
+        0 0 8px
+        rgba(241,207,88,0.2);
     }
+
 
     footer p {
       color: #777;
+
       font-size: 12px;
     }
 
@@ -612,21 +1073,47 @@
         display: none;
       }
 
+
       .categories {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+          repeat(2, 1fr);
       }
 
+
       .products {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+          repeat(2, 1fr);
       }
+
 
       .product-image {
         height: 180px;
       }
 
+
       .contact-grid {
         grid-template-columns: 1fr;
       }
+
+
+      .product-modal-content {
+        grid-template-columns: 1fr;
+
+        max-height: 90vh;
+
+        overflow-y: auto;
+      }
+
+
+      .product-modal-image {
+        min-height: 250px;
+      }
+
+
+      .product-modal-info {
+        padding: 30px 25px;
+      }
+
     }
 
 
@@ -636,62 +1123,86 @@
         padding: 15px 18px;
       }
 
+
       .brand-name {
         font-size: 18px;
       }
 
+
       .logo-icon {
         width: 28px;
+
         height: 34px;
       }
+
 
       .hero {
         min-height: 470px;
       }
 
+
       .hero-inner {
         padding: 55px 20px;
       }
+
 
       .section {
         padding: 55px 20px;
       }
 
+
+      .products-section {
+        padding:
+          0 20px 55px;
+      }
+
+
       .products {
         grid-template-columns: 1fr;
       }
 
+
       .categories {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+          1fr 1fr;
       }
+
 
       .product-image {
         height: 210px;
       }
 
+
       .section-title {
         display: block;
       }
+
 
       .section-title p {
         margin-top: 7px;
       }
 
+
       .brand-name::before {
         right: -35px;
+
         font-size: 8px;
       }
+
 
       .brand-name::after {
         display: none;
       }
 
+
       .contact {
         padding: 55px 20px;
       }
+
     }
 
   </style>
+
 </head>
 
 
@@ -719,7 +1230,9 @@
 
       <nav>
 
-        <a href="#home">خانه</a>
+        <a href="#home">
+          خانه
+        </a>
 
         <a href="#categories">
           دسته‌بندی
@@ -749,13 +1262,17 @@
        HERO
   ========================= -->
 
-  <section class="hero" id="home">
+  <section
+    class="hero"
+    id="home"
+  >
 
     <div class="hero-inner">
 
       <div class="hero-small">
         GOLDEN LANTERN
       </div>
+
 
       <h1>
 
@@ -769,6 +1286,7 @@
 
       </h1>
 
+
       <p>
 
         مجموعه‌ای از محصولات روشنایی
@@ -776,6 +1294,7 @@
         فروشگاه‌ها و فضاهای مدرن.
 
       </p>
+
 
       <a
         class="hero-button"
@@ -890,7 +1409,6 @@
             لوازم برقی
           </h3>
 
-          
           <span>
             ELECTRICAL
           </span>
@@ -899,19 +1417,24 @@
 
       </div>
 
-      <div
-  class="category"
-  onclick="showAllProducts()"
->
-  <div>
-    <h3>
-      همه محصولات
-    </h3>
 
-    <span>
-      ALL PRODUCTS
-    </span>
-  </div>
+      <div
+        class="category"
+        onclick="showAllProducts()"
+      >
+
+        <div>
+
+          <h3>
+            همه محصولات
+          </h3>
+
+          <span>
+            ALL PRODUCTS
+          </span>
+
+        </div>
+
       </div>
 
 
@@ -926,7 +1449,7 @@
   ========================= -->
 
   <section
-    class="section"
+    class="products-section"
     id="products"
   >
 
@@ -939,13 +1462,15 @@
         </h2>
 
         <p>
-          محصولات فانوس طلایی
+          محصولات فانوس طلایی ادگی
         </p>
 
       </div>
 
     </div>
 
+
+    <!-- SEARCH -->
 
     <div class="search-box">
 
@@ -959,292 +1484,59 @@
     </div>
 
 
+    <!-- PRODUCTS -->
+
     <div
       class="products"
       id="products-container"
     ></div>
 
-
   </section>
 
 
 
   <!-- =========================
-       ABOUT
+       PRODUCT MODAL
   ========================= -->
 
-  <section
-    class="about"
-    id="about"
+  <div
+    id="product-modal"
+    class="product-modal"
+    onclick="closeProduct(event)"
   >
 
-    <div class="about-inner">
+    <div
+      class="product-modal-content"
+      onclick="event.stopPropagation()"
+    >
 
-      <h2>
-        فانوس طلایی ادگی
-      </h2>
-
-      <p>
-
-        ما در فانوس طلایی تلاش می‌کنیم
-        محصولات روشنایی و لوازم برقی
-        باکیفیت و کاربردی را با انتخابی
-        متنوع در اختیار شما قرار دهیم.
-
-        برای ما، نور فقط روشنایی نیست؛
-        بخشی از زیبایی فضاست.
-
-      </p>
-
-    </div>
-
-  </section>
+      <button
+        class="product-modal-close"
+        onclick="closeProduct()"
+      >
+        ×
+      </button>
 
 
-
-  <!-- =========================
-       CONTACT
-  ========================= -->
-
-  <section
-    class="contact"
-    id="contact"
-  >
-
-    <h2>
-      اطلاعات تماس
-    </h2>
-
-
-    <div class="contact-grid">
-
-
-      <div class="contact-card">
-
-        <div class="icon">
-          ☎
-        </div>
-
-        <h3>
-          تماس با ما
-        </h3>
-
-        <p>
-
-          <span class="phone-number">
-            ۰۹۱۲۲۳۷۸۵۷۷
-          </span>
-
-          <span class="phone-number">
-            ۰۹۱۲۴۳۰۳۸۰۴
-          </span>
-
-        </p>
-
+      <div
+        class="product-modal-image"
+        id="modal-image"
+      >
+        💡
       </div>
 
 
+      <div class="product-modal-info">
 
-      <div class="contact-card">
+        <div
+          class="product-category"
+          id="modal-category"
+        ></div>
 
-        <div class="icon">
-          ✦
-        </div>
 
-        <h3>
-          آدرس فروشگاه
-        </h3>
+        <h2
+          id="modal-name"
+        ></h2>
 
-        <p>
 
-          پرند، فاز صفر،
-          بلوار چهارباغ امام خمینی،
-          نبش نقش جهان ۲،
-          مجتمع تجاری پارادیس،
-          طبقه همکف، واحد ۲۸
-
-        </p>
-
-      </div>
-
-
-    </div>
-
-  </section>
-
-
-
-  <!-- =========================
-       FOOTER
-  ========================= -->
-
-  <footer>
-
-    <div class="footer-logo">
-      فانوس طلایی ادگی
-    </div>
-
-    <p>
-      تجهیزات روشنایی و لوازم برقی
-    </p>
-
-  </footer>
-
-
-
-  <!-- =========================
-       PRODUCTS SCRIPT
-  ========================= -->
-
-  <script src="products.js"></script>
-
-<script>
-
-  /* =========================
-     DISPLAY PRODUCTS
-  ========================= */
-
-  const container =
-    document.getElementById("products-container");
-
-
-  function displayProducts(list) {
-
-    container.innerHTML = "";
-
-    list.forEach(product => {
-
-      const card =
-        document.createElement("div");
-
-      card.className = "product";
-
-      card.dataset.name =
-        product.name;
-
-      card.innerHTML = `
-
-        <div class="product-image">
-  <img
-    src="${product.image}"
-    alt="${product.name}"
-  >
-</div>
-
-        <div class="product-info">
-
-          <div class="product-category">
-            ${product.category}
-          </div>
-
-          <h3>
-            ${product.name}
-          </h3>
-
-          <div class="product-description">
-            ${product.description}
-          </div>
-
-          <div class="product-bottom">
-
-            <div class="price">
-              ${product.price} تومان
-            </div>
-
-            <div class="availability">
-              ${
-                product.stock > 0
-                  ? "موجود"
-                  : "ناموجود"
-              }
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-      container.appendChild(card);
-
-    });
-
-  }
-
-
-  /* =========================
-     SHOW ALL PRODUCTS
-  ========================= */
-
-  displayProducts(products);
-
-
-  function showAllProducts() {
-
-    displayProducts(products);
-
-    document
-      .getElementById("products")
-      .scrollIntoView({
-        behavior: "smooth"
-      });
-
-  }
-
-
-  /* =========================
-     SEARCH
-  ========================= */
-
-  function searchProducts() {
-
-    const searchValue =
-      document
-        .getElementById("search")
-        .value
-        .toLowerCase()
-        .trim();
-
-    const filteredProducts =
-      products.filter(function(product) {
-
-        return product.name
-          .toLowerCase()
-          .includes(searchValue);
-
-      });
-
-    displayProducts(filteredProducts);
-
-  }
-
-
-  /* =========================
-     CATEGORY FILTER
-  ========================= */
-
-  function filterCategory(category) {
-
-    const filteredProducts =
-      products.filter(function(product) {
-
-        return product.category === category;
-
-      });
-
-    displayProducts(filteredProducts);
-
-    document
-      .getElementById("products")
-      .scrollIntoView({
-        behavior: "smooth"
-      });
-
-  }
-
-</script>
-
-
-      
-</body>
-</html>
+        <p
