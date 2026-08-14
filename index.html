@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>فانوس طلایی | تجهیزات روشنایی</title>
+  <title>فانوس طلایی ادگی</title>
 
   <style>
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -14,13 +15,18 @@
     }
 
     :root {
-      --black: #0b0b0b;
-      --dark: #151515;
+      --black: #080808;
+      --dark: #111111;
+      --dark2: #181818;
       --gold: #d6a928;
-      --gold-light: #f2d45c;
+      --gold-light: #f1cf58;
       --lemon: #eaff3d;
       --white: #ffffff;
-      --gray: #b9b9b9;
+      --gray: #a9a9a9;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
@@ -35,37 +41,111 @@
       text-decoration: none;
     }
 
-    /* HEADER */
+
+    /* =========================
+       HEADER
+    ========================= */
 
     header {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(11, 11, 11, 0.95);
+      background: rgba(8, 8, 8, 0.94);
       border-bottom: 1px solid rgba(214, 169, 40, 0.25);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
     }
 
     .header-inner {
       max-width: 1200px;
       margin: auto;
-      padding: 18px 25px;
+      padding: 17px 25px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 25px;
     }
 
-    .logo {
-      font-size: 25px;
-      font-weight: bold;
-      color: var(--gold-light);
-      white-space: nowrap;
+
+    /* LOGO */
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    .logo span {
+    .logo-icon {
+      position: relative;
+      width: 32px;
+      height: 38px;
+      border: 2px solid var(--gold-light);
+      border-radius: 5px 5px 8px 8px;
+      box-shadow:
+        0 0 8px rgba(241, 207, 88, 0.5),
+        0 0 20px rgba(241, 207, 88, 0.15);
+    }
+
+    .logo-icon::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 7px;
+      border: 2px solid var(--gold-light);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      top: -8px;
+      left: 5px;
+    }
+
+    .logo-icon::after {
+      content: "✦";
+      position: absolute;
+      font-size: 15px;
       color: var(--lemon);
+      left: 7px;
+      top: 7px;
+      text-shadow: 0 0 8px rgba(234, 255, 61, 0.8);
     }
+
+    .brand-name {
+      position: relative;
+      color: var(--gold-light);
+      font-size: 23px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      text-shadow:
+        0 0 8px rgba(241, 207, 88, 0.25);
+    }
+
+    /* decorative lights around name */
+
+    .brand-name::before {
+      content: "✦  ·  ✧";
+      position: absolute;
+      color: var(--lemon);
+      font-size: 10px;
+      right: -55px;
+      top: -13px;
+      opacity: 0.9;
+      text-shadow:
+        0 0 7px var(--lemon),
+        0 0 14px var(--lemon);
+    }
+
+    .brand-name::after {
+      content: "·  ✦";
+      position: absolute;
+      color: var(--gold-light);
+      font-size: 9px;
+      left: -35px;
+      bottom: -10px;
+      text-shadow:
+        0 0 7px var(--gold-light);
+    }
+
+
+    /* NAVIGATION */
 
     nav {
       display: flex;
@@ -74,27 +154,85 @@
       font-size: 14px;
     }
 
+    nav a {
+      transition: 0.25s;
+    }
+
     nav a:hover {
       color: var(--lemon);
     }
 
-    /* HERO */
+
+    /* =========================
+       HERO
+    ========================= */
 
     .hero {
       min-height: 530px;
       display: flex;
       align-items: center;
+
       background:
-        radial-gradient(circle at 20% 50%, rgba(234,255,61,0.08), transparent 30%),
-        radial-gradient(circle at 80% 30%, rgba(214,169,40,0.16), transparent 35%),
-        linear-gradient(135deg, #080808, #17130a);
+        radial-gradient(
+          circle at 20% 50%,
+          rgba(234,255,61,0.08),
+          transparent 30%
+        ),
+
+        radial-gradient(
+          circle at 80% 30%,
+          rgba(214,169,40,0.16),
+          transparent 35%
+        ),
+
+        linear-gradient(
+          135deg,
+          #070707,
+          #17130a
+        );
+
+      position: relative;
+      overflow: hidden;
     }
+
+
+    /* tiny decorative lights */
+
+    .hero::before {
+      content: "✦   ·       ✧        ·   ✦";
+      position: absolute;
+      top: 70px;
+      left: 8%;
+      color: var(--gold-light);
+      font-size: 13px;
+      letter-spacing: 8px;
+      opacity: 0.7;
+      text-shadow:
+        0 0 8px var(--gold),
+        0 0 18px var(--gold);
+    }
+
+    .hero::after {
+      content: "·      ✦        ·     ✧";
+      position: absolute;
+      bottom: 65px;
+      right: 8%;
+      color: var(--lemon);
+      font-size: 11px;
+      letter-spacing: 9px;
+      opacity: 0.65;
+      text-shadow:
+        0 0 8px var(--lemon);
+    }
+
 
     .hero-inner {
       max-width: 1200px;
       width: 100%;
       margin: auto;
       padding: 70px 25px;
+      position: relative;
+      z-index: 2;
     }
 
     .hero-small {
@@ -137,7 +275,10 @@
       transform: translateY(-2px);
     }
 
-    /* SECTION */
+
+    /* =========================
+       SECTIONS
+    ========================= */
 
     .section {
       max-width: 1200px;
@@ -163,7 +304,10 @@
       font-size: 13px;
     }
 
-    /* CATEGORIES */
+
+    /* =========================
+       CATEGORIES
+    ========================= */
 
     .categories {
       display: grid;
@@ -173,20 +317,35 @@
 
     .category {
       min-height: 130px;
-      background: linear-gradient(145deg, #181818, #101010);
+
+      background:
+        linear-gradient(
+          145deg,
+          #181818,
+          #101010
+        );
+
       border: 1px solid #292929;
+
       display: flex;
       justify-content: center;
       align-items: center;
+
       text-align: center;
+
       border-radius: 6px;
+
       transition: 0.3s;
+
       cursor: pointer;
     }
 
     .category:hover {
       border-color: var(--gold);
       transform: translateY(-4px);
+
+      box-shadow:
+        0 10px 30px rgba(214,169,40,0.08);
     }
 
     .category h3 {
@@ -201,7 +360,10 @@
       margin-top: 5px;
     }
 
-    /* SEARCH */
+
+    /* =========================
+       SEARCH
+    ========================= */
 
     .search-box {
       margin-bottom: 30px;
@@ -209,20 +371,32 @@
 
     .search-box input {
       width: 100%;
+
       background: #151515;
+
       border: 1px solid #333;
+
       color: white;
+
       padding: 16px 20px;
+
       border-radius: 5px;
+
       outline: none;
+
       font-family: inherit;
     }
 
     .search-box input:focus {
       border-color: var(--gold);
+      box-shadow:
+        0 0 12px rgba(214,169,40,0.1);
     }
 
-    /* PRODUCTS */
+
+    /* =========================
+       PRODUCTS
+    ========================= */
 
     .products {
       display: grid;
@@ -232,26 +406,49 @@
 
     .product {
       background: #151515;
+
       border: 1px solid #282828;
+
       border-radius: 6px;
+
       overflow: hidden;
+
       transition: 0.3s;
     }
 
     .product:hover {
       transform: translateY(-5px);
-      border-color: rgba(214,169,40,0.7);
+
+      border-color:
+        rgba(214,169,40,0.7);
+
+      box-shadow:
+        0 12px 30px rgba(0,0,0,0.35);
     }
 
     .product-image {
       height: 220px;
+
       background:
-        radial-gradient(circle, rgba(234,255,61,0.15), transparent 25%),
-        linear-gradient(145deg, #232323, #0d0d0d);
+        radial-gradient(
+          circle,
+          rgba(234,255,61,0.15),
+          transparent 25%
+        ),
+
+        linear-gradient(
+          145deg,
+          #232323,
+          #0d0d0d
+        );
+
       display: flex;
+
       justify-content: center;
       align-items: center;
+
       color: var(--gold-light);
+
       font-size: 50px;
     }
 
@@ -295,18 +492,27 @@
       color: #9fdb75;
     }
 
-    /* ABOUT */
+
+    /* =========================
+       ABOUT
+    ========================= */
 
     .about {
       background: #111;
-      border-top: 1px solid #222;
-      border-bottom: 1px solid #222;
+
+      border-top:
+        1px solid #222;
+
+      border-bottom:
+        1px solid #222;
     }
 
     .about-inner {
       max-width: 850px;
       margin: auto;
+
       padding: 80px 25px;
+
       text-align: center;
     }
 
@@ -321,18 +527,103 @@
       font-size: 15px;
     }
 
-    /* FOOTER */
+
+    /* =========================
+       CONTACT
+    ========================= */
+
+    .contact {
+      max-width: 900px;
+      margin: auto;
+
+      padding: 75px 25px;
+
+      text-align: center;
+    }
+
+    .contact h2 {
+      color: var(--gold-light);
+      font-size: 30px;
+      margin-bottom: 35px;
+    }
+
+    .contact-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 20px;
+    }
+
+    .contact-card {
+      background: #141414;
+
+      border: 1px solid #292929;
+
+      border-radius: 7px;
+
+      padding: 25px;
+
+      transition: 0.3s;
+    }
+
+    .contact-card:hover {
+      border-color: var(--gold);
+      box-shadow:
+        0 0 25px rgba(214,169,40,0.08);
+    }
+
+    .contact-card .icon {
+      color: var(--lemon);
+      font-size: 25px;
+      margin-bottom: 10px;
+
+      text-shadow:
+        0 0 10px rgba(234,255,61,0.4);
+    }
+
+    .contact-card h3 {
+      color: var(--gold-light);
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .contact-card p {
+      color: #aaa;
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    .phone-number {
+      direction: ltr;
+      display: block;
+      color: white;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
 
     footer {
       padding: 45px 25px;
+
       text-align: center;
+
       background: #080808;
+
+      border-top:
+        1px solid rgba(214,169,40,0.15);
     }
 
     footer .footer-logo {
       color: var(--gold-light);
       font-size: 22px;
       margin-bottom: 10px;
+
+      text-shadow:
+        0 0 8px rgba(241,207,88,0.2);
     }
 
     footer p {
@@ -340,7 +631,10 @@
       font-size: 12px;
     }
 
-    /* MOBILE */
+
+    /* =========================
+       MOBILE
+    ========================= */
 
     @media (max-width: 850px) {
 
@@ -349,19 +643,39 @@
       }
 
       .categories {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+          repeat(2, 1fr);
       }
 
       .products {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+          repeat(2, 1fr);
       }
 
       .product-image {
         height: 180px;
       }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
+
     @media (max-width: 500px) {
+
+      .header-inner {
+        padding: 15px 18px;
+      }
+
+      .brand-name {
+        font-size: 18px;
+      }
+
+      .logo-icon {
+        width: 28px;
+        height: 34px;
+      }
 
       .hero {
         min-height: 470px;
@@ -380,7 +694,8 @@
       }
 
       .categories {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+          1fr 1fr;
       }
 
       .product-image {
@@ -394,33 +709,78 @@
       .section-title p {
         margin-top: 7px;
       }
+
+      .brand-name::before {
+        right: -35px;
+        font-size: 8px;
+      }
+
+      .brand-name::after {
+        display: none;
+      }
+
+      .contact {
+        padding: 55px 20px;
+      }
     }
+
   </style>
 </head>
 
+
 <body>
 
-  <!-- HEADER -->
+
+  <!-- =========================
+       HEADER
+  ========================= -->
 
   <header>
+
     <div class="header-inner">
 
-      <div class="logo">
-        فانوس <span>طلایی</span>
-      </div>
+      <a href="#home" class="brand">
+
+        <div class="logo-icon"></div>
+
+        <div class="brand-name">
+          فانوس طلایی ادگی
+        </div>
+
+      </a>
+
 
       <nav>
+
         <a href="#home">خانه</a>
-        <a href="#categories">دسته‌بندی</a>
-        <a href="#products">محصولات</a>
-        <a href="#about">درباره ما</a>
+
+        <a href="#categories">
+          دسته‌بندی
+        </a>
+
+        <a href="#products">
+          محصولات
+        </a>
+
+        <a href="#about">
+          درباره ما
+        </a>
+
+        <a href="#contact">
+          تماس با ما
+        </a>
+
       </nav>
 
     </div>
+
   </header>
 
 
-  <!-- HERO -->
+
+  <!-- =========================
+       HERO
+  ========================= -->
 
   <section class="hero" id="home">
 
@@ -431,16 +791,29 @@
       </div>
 
       <h1>
-        روشنایی<br>
-        <span>با کیفیت متفاوت</span>
+
+        روشنایی
+
+        <br>
+
+        <span>
+          با کیفیت متفاوت
+        </span>
+
       </h1>
 
       <p>
-        مجموعه‌ای از محصولات روشنایی و لوازم برقی
-        برای خانه‌ها، فروشگاه‌ها و فضاهای مدرن.
+
+        مجموعه‌ای از محصولات روشنایی
+        و لوازم برقی برای خانه‌ها،
+        فروشگاه‌ها و فضاهای مدرن.
+
       </p>
 
-      <a class="hero-button" href="#products">
+      <a
+        class="hero-button"
+        href="#products"
+      >
         مشاهده محصولات
       </a>
 
@@ -449,75 +822,158 @@
   </section>
 
 
-  <!-- CATEGORIES -->
 
-  <section class="section" id="categories">
+  <!-- =========================
+       CATEGORIES
+  ========================= -->
+
+  <section
+    class="section"
+    id="categories"
+  >
 
     <div class="section-title">
+
       <div>
-        <h2>دسته‌بندی محصولات</h2>
-        <p>محصول مورد نیازت را پیدا کن</p>
+
+        <h2>
+          دسته‌بندی محصولات
+        </h2>
+
+        <p>
+          محصول مورد نیازت را پیدا کن
+        </p>
+
       </div>
+
     </div>
+
 
     <div class="categories">
 
-      <div class="category">
-        <div>
-          <h3>لامپ‌ها</h3>
-          <span>LIGHT BULBS</span>
-        </div>
-      </div>
 
       <div class="category">
+
         <div>
-          <h3>چراغ‌ها</h3>
-          <span>LIGHTS</span>
+
+          <h3>
+            لامپ‌ها
+          </h3>
+
+          <span>
+            LIGHT BULBS
+          </span>
+
         </div>
+
       </div>
 
-      <div class="category">
-        <div>
-          <h3>لوستر</h3>
-          <span>CHANDELIERS</span>
-        </div>
-      </div>
 
       <div class="category">
+
         <div>
-          <h3>لوازم برقی</h3>
-          <span>ELECTRICAL</span>
+
+          <h3>
+            چراغ‌ها
+          </h3>
+
+          <span>
+            LIGHTS
+          </span>
+
         </div>
+
       </div>
+
+
+      <div class="category">
+
+        <div>
+
+          <h3>
+            لوستر
+          </h3>
+
+          <span>
+            CHANDELIERS
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="category">
+
+        <div>
+
+          <h3>
+            لوازم برقی
+          </h3>
+
+          <span>
+            ELECTRICAL
+          </span>
+
+        </div>
+
+      </div>
+
 
     </div>
 
   </section>
 
 
-  <!-- PRODUCTS -->
 
-  <section class="section" id="products">
+  <!-- =========================
+       PRODUCTS
+  ========================= -->
+
+  <section
+    class="section"
+    id="products"
+  >
 
     <div class="section-title">
+
       <div>
-        <h2>محصولات</h2>
-        <p>منتخب محصولات فانوس طلایی</p>
+
+        <h2>
+          محصولات
+        </h2>
+
+        <p>
+          منتخب محصولات فانوس طلایی
+        </p>
+
       </div>
+
     </div>
 
+
     <div class="search-box">
+
       <input
         type="text"
         id="search"
         placeholder="جستجوی محصول..."
         onkeyup="searchProducts()"
       >
+
     </div>
 
-    <div class="products" id="products-container">
 
-      <div class="product" data-name="لامپ LED حبابی">
+    <div
+      class="products"
+      id="products-container"
+    >
+
+
+      <div
+        class="product"
+        data-name="لامپ LED حبابی"
+      >
 
         <div class="product-image">
           💡
@@ -554,7 +1010,11 @@
       </div>
 
 
-      <div class="product" data-name="لامپ LED فیلامنتی">
+
+      <div
+        class="product"
+        data-name="لامپ LED فیلامنتی"
+      >
 
         <div class="product-image">
           💡
@@ -591,7 +1051,11 @@
       </div>
 
 
-      <div class="product" data-name="چراغ دیواری مدرن">
+
+      <div
+        class="product"
+        data-name="چراغ دیواری مدرن"
+      >
 
         <div class="product-image">
           ✦
@@ -628,7 +1092,11 @@
       </div>
 
 
-      <div class="product" data-name="چراغ رومیزی طلایی">
+
+      <div
+        class="product"
+        data-name="چراغ رومیزی طلایی"
+      >
 
         <div class="product-image">
           ◉
@@ -664,23 +1132,38 @@
 
       </div>
 
+
     </div>
 
   </section>
 
 
-  <!-- ABOUT -->
 
-  <section class="about" id="about">
+  <!-- =========================
+       ABOUT
+  ========================= -->
+
+  <section
+    class="about"
+    id="about"
+  >
 
     <div class="about-inner">
 
-      <h2>فانوس طلایی</h2>
+      <h2>
+        فانوس طلایی ادگی
+      </h2>
 
       <p>
-        ما در فانوس طلایی تلاش می‌کنیم محصولات روشنایی
-        باکیفیت و کاربردی را با انتخابی متنوع در اختیار شما قرار دهیم.
-        برای ما، نور فقط روشنایی نیست؛ بخشی از زیبایی فضاست.
+
+        ما در فانوس طلایی تلاش می‌کنیم
+        محصولات روشنایی و لوازم برقی
+        باکیفیت و کاربردی را با انتخابی
+        متنوع در اختیار شما قرار دهیم.
+
+        برای ما، نور فقط روشنایی نیست؛
+        بخشی از زیبایی فضاست.
+
       </p>
 
     </div>
@@ -688,12 +1171,87 @@
   </section>
 
 
-  <!-- FOOTER -->
+
+  <!-- =========================
+       CONTACT
+  ========================= -->
+
+  <section
+    class="contact"
+    id="contact"
+  >
+
+    <h2>
+      اطلاعات تماس
+    </h2>
+
+
+    <div class="contact-grid">
+
+
+      <div class="contact-card">
+
+        <div class="icon">
+          ☎
+        </div>
+
+        <h3>
+          تماس با ما
+        </h3>
+
+        <p>
+
+          <span class="phone-number">
+            ۰۹۱۲۲۳۷۸۵۷۷
+          </span>
+
+          <span class="phone-number">
+            ۰۹۱۲۴۳۰۳۸۰۴
+          </span>
+
+        </p>
+
+      </div>
+
+
+
+      <div class="contact-card">
+
+        <div class="icon">
+          ✦
+        </div>
+
+        <h3>
+          آدرس فروشگاه
+        </h3>
+
+        <p>
+
+          پرند، فاز صفر،
+          بلوار چهارباغ امام خمینی،
+          نبش نقش جهان ۲،
+          مجتمع تجاری پارادیس،
+          طبقه همکف، واحد ۲۸
+
+        </p>
+
+      </div>
+
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       FOOTER
+  ========================= -->
 
   <footer>
 
     <div class="footer-logo">
-      فانوس طلایی
+      فانوس طلایی ادگی
     </div>
 
     <p>
@@ -703,25 +1261,41 @@
   </footer>
 
 
+
+  <!-- =========================
+       SEARCH SCRIPT
+  ========================= -->
+
   <script>
 
     function searchProducts() {
 
       const searchValue =
-        document.getElementById("search").value.toLowerCase();
+        document
+          .getElementById("search")
+          .value
+          .toLowerCase();
 
       const products =
         document.querySelectorAll(".product");
 
+
       products.forEach(function(product) {
 
         const name =
-          product.getAttribute("data-name").toLowerCase();
+          product
+            .getAttribute("data-name")
+            .toLowerCase();
+
 
         if (name.includes(searchValue)) {
+
           product.style.display = "";
+
         } else {
+
           product.style.display = "none";
+
         }
 
       });
@@ -729,6 +1303,7 @@
     }
 
   </script>
+
 
 </body>
 </html>
