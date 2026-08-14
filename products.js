@@ -1187,4 +1187,5 @@ const products = [
     stock: 0,
     image: "🔌",
     description: "کابل زوجی 0.40 با 4 زوج"
-  },
+  }
+];
