@@ -1136,7 +1136,7 @@ const products = [
 
   {
     id: 110,
-    name: "کابل جریدار 1.5*2",
+  name: "کابل جریدار 1.5*2",
     category: "کابل",
     price: "۶,۹۳۹,۹۱۰",
     stock: 0,
@@ -1187,5 +1187,141 @@ const products = [
     stock: 0,
     image: "🔌",
     description: "کابل زوجی 0.40 با 4 زوج"
+  },
+
+  {
+    id: 115,
+    name: "کابل زوجی 0.40 - 6 زوج",
+    category: "کابل",
+    price: "۶۸,۷۴۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.40 با 6 زوج"
+  },
+
+  {
+    id: 116,
+    name: "کابل زوجی 0.50 - 1 زوج",
+    category: "کابل",
+    price: "۲۰,۷۴۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.50 با 1 زوج"
+  },
+
+  {
+    id: 117,
+    name: "کابل زوجی 0.50 - 2 زوج",
+    category: "کابل",
+    price: "۳۲,۲۲۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.50 با 2 زوج"
+  },
+
+  {
+    id: 118,
+    name: "کابل زوجی 0.50 - 4 زوج",
+    category: "کابل",
+    price: "۵۳,۱۶۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.50 با 4 زوج"
+  },
+
+  {
+    id: 119,
+    name: "کابل زوجی 0.50 - 6 زوج",
+    category: "کابل",
+    price: "۷۵,۸۵۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.50 با 6 زوج"
+  },
+
+  {
+    id: 120,
+    name: "کابل زوجی 0.60 - 2 زوج",
+    category: "کابل",
+    price: "۵۲,۲۶۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.60 با 2 زوج"
+  },
+
+  {
+    id: 121,
+    name: "کابل زوجی 0.60 - 4 زوج",
+    category: "کابل",
+    price: "۹۳,۷۰۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.60 با 4 زوج"
+  },
+
+  {
+    id: 122,
+    name: "کابل زوجی 0.60 - 6 زوج",
+    category: "کابل",
+    price: "۱۳۵,۰۹۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.60 با 6 زوج"
+  },
+
+  {
+    id: 123,
+    name: "کابل زوجی 0.60 - 10 زوج",
+    category: "کابل",
+    price: "۲۳۲,۲۷۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل زوجی 0.60 با 10 زوج"
+  },
+
+
+  // =========================
+  // CCS
+  // =========================
+
+  {
+    id: 124,
+    name: "CCS 0.60 - 2 زوج",
+    category: "کابل",
+    price: "۴۵,۶۱۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل CCS 0.60 با 2 زوج"
+  },
+
+  {
+    id: 125,
+    name: "CCS 0.60 - 4 زوج",
+    category: "کابل",
+    price: "۶۴,۲۲۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل CCS 0.60 با 4 زوج"
+  },
+
+  {
+    id: 126,
+    name: "CCS 0.60 - 6 زوج",
+    category: "کابل",
+    price: "۱۰۳,۴۷۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل CCS 0.60 با 6 زوج"
+  },
+
+  {
+    id: 127,
+    name: "CCS 0.60 - 10 زوج",
+    category: "کابل",
+    price: "۱۴۸,۷۱۰",
+    stock: 0,
+    image: "🔌",
+    description: "کابل CCS 0.60 با 10 زوج"
   }
+
 ];
