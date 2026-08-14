@@ -85,7 +85,9 @@
     }
 
 
-    /* LOGO */
+    /* =========================
+       LOGO
+    ========================= */
 
     .brand {
       display: flex;
@@ -204,7 +206,9 @@
     }
 
 
-    /* NAVIGATION */
+    /* =========================
+       NAVIGATION
+    ========================= */
 
     nav {
       display: flex;
@@ -432,7 +436,7 @@
       display: grid;
 
       grid-template-columns:
-        repeat(4, 1fr);
+        repeat(5, 1fr);
 
       gap: 15px;
     }
@@ -784,7 +788,7 @@
 
         radial-gradient(
           circle,
-          rgba(234,255,61,0.15),
+          rgba(234,169,61,0.15),
           transparent 30%
         ),
 
@@ -934,67 +938,97 @@
        CONTACT
     ========================= */
 
-  <section
-  class="contact"
-  id="contact"
->
+    .contact {
+      max-width: 900px;
 
-  <h2>
-    اطلاعات تماس
-  </h2>
+      margin: auto;
 
-  <div class="contact-grid">
+      padding: 75px 25px;
 
-    <div class="contact-card">
-
-      <div class="icon">
-        ☎
-      </div>
-
-      <h3>
-        تماس با ما
-      </h3>
-
-      <p>
-
-        <span class="phone-number">
-          ۰۹۱۲۲۳۷۸۵۷۷
-        </span>
-
-        <span class="phone-number">
-          ۰۹۱۲۴۳۰۳۸۰۴
-        </span>
-
-      </p>
-
-    </div>
+      text-align: center;
+    }
 
 
-    <div class="contact-card">
+    .contact h2 {
+      color: var(--gold-light);
 
-      <div class="icon">
-        ✦
-      </div>
+      font-size: 30px;
 
-      <h3>
-        آدرس فروشگاه
-      </h3>
+      margin-bottom: 35px;
+    }
 
-      <p>
 
-        پرند، فاز صفر،
-        بلوار چهارباغ امام خمینی،
-        نبش نقش جهان ۲،
-        مجتمع تجاری پارادیس،
-        طبقه همکف، واحد ۲۸
+    .contact-grid {
+      display: grid;
 
-      </p>
+      grid-template-columns:
+        repeat(2, 1fr);
 
-    </div>
+      gap: 20px;
+    }
 
-  </div>
 
-</section>
+    .contact-card {
+      background: #141414;
+
+      border: 1px solid #292929;
+
+      border-radius: 7px;
+
+      padding: 25px;
+
+      transition: 0.3s;
+    }
+
+
+    .contact-card:hover {
+      border-color: var(--gold);
+
+      box-shadow:
+        0 0 25px
+        rgba(214,169,40,0.08);
+    }
+
+
+    .contact-card .icon {
+      color: var(--lemon);
+
+      font-size: 25px;
+
+      margin-bottom: 10px;
+
+      text-shadow:
+        0 0 10px
+        rgba(234,255,61,0.4);
+    }
+
+
+    .contact-card h3 {
+      color: var(--gold-light);
+
+      font-size: 16px;
+
+      margin-bottom: 8px;
+    }
+
+
+    .contact-card p {
+      color: #aaa;
+
+      font-size: 14px;
+
+      line-height: 2;
+    }
+
+
+    .phone-number {
+      direction: ltr;
+
+      display: block;
+
+      color: white;
+    }
+
 
     /* =========================
        FOOTER
@@ -1036,6 +1070,16 @@
     /* =========================
        MOBILE
     ========================= */
+
+    @media (max-width: 1000px) {
+
+      .categories {
+        grid-template-columns:
+          repeat(3, 1fr);
+      }
+
+    }
+
 
     @media (max-width: 850px) {
 
@@ -1454,7 +1498,7 @@
     </div>
 
 
-    <!-- PRODUCTS -->
+    <!-- PRODUCTS CONTAINER -->
 
     <div
       class="products"
@@ -1489,24 +1533,4 @@
 
 
       <div
-        class="product-modal-image"
-        id="modal-image"
-      >
-        💡
-      </div>
-
-
-      <div class="product-modal-info">
-
-        <div
-          class="product-category"
-          id="modal-category"
-        ></div>
-
-
-        <h2
-          id="modal-name"
-        ></h2>
-
-
-        <p
+        class="product-modal-ima
