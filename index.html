@@ -1091,150 +1091,150 @@
 
   <script src="products.js"></script>
 
+<script>
 
-  <script>
+  /* =========================
+     DISPLAY PRODUCTS
+  ========================= */
 
-    /* =========================
-       DISPLAY PRODUCTS
-    ========================= */
-
-    const container =
-      document.getElementById("products-container");
-
-
-    function displayProducts(list) {
-
-      container.innerHTML = "";
+  const container =
+    document.getElementById("products-container");
 
 
-      list.forEach(product => {
+  function displayProducts(list) {
 
-        const card =
-          document.createElement("div");
+    container.innerHTML = "";
 
+    list.forEach(product => {
 
-        card.className = "product";
+      const card =
+        document.createElement("div");
 
+      card.className = "product";
 
-        card.dataset.name =
-          product.name;
+      card.dataset.name =
+        product.name;
 
+      card.innerHTML = `
 
-        card.innerHTML = `
+        <div class="product-image">
+          ${product.image}
+        </div>
 
-          <div class="product-image">
-            ${product.image}
+        <div class="product-info">
+
+          <div class="product-category">
+            ${product.category}
           </div>
 
-          <div class="product-info">
+          <h3>
+            ${product.name}
+          </h3>
 
-            <div class="product-category">
-              ${product.category}
+          <div class="product-description">
+            ${product.description}
+          </div>
+
+          <div class="product-bottom">
+
+            <div class="price">
+              ${product.price} تومان
             </div>
 
-            <h3>
-              ${product.name}
-            </h3>
-
-            <div class="product-description">
-              ${product.description}
-            </div>
-
-            <div class="product-bottom">
-
-              <div class="price">
-                ${product.price} تومان
-              </div>
-
-              <div class="availability">
-                ${
-                  product.stock > 0
-                    ? "موجود"
-                    : "ناموجود"
-                }
-              </div>
-
+            <div class="availability">
+              ${
+                product.stock > 0
+                  ? "موجود"
+                  : "ناموجود"
+              }
             </div>
 
           </div>
 
-        `;
+        </div>
+
+      `;
+
+      container.appendChild(card);
+
+    });
+
+  }
 
 
-        container.appendChild(card);
-
-      });
-
-    }
-
-
-    /* نمایش اولیه همه محصولات */
-
-    displayProducts(products);
-
-
-
-    /* =========================
-       SEARCH
-    ========================= */
-
-    function searchProducts() {
-
-      const searchValue =
-        document
-          .getElementById("search")
-          .value
-          .toLowerCase()
-          .trim();
-
-
-      const filteredProducts =
-        products.filter(function(product) {
-
-          return product.name
-            .toLowerCase()
-            .includes(searchValue);
-
-        });
-
-
-      displayProducts(filteredProducts);
-
-    }
-
-
-
-    /* =========================
-       CATEGORY FILTER
-    ========================= */
-
-    function filterCategory(category) {function showAllProducts() {
+  /* =========================
+     SHOW ALL PRODUCTS
+  ========================= */
 
   displayProducts(products);
 
-  document
-    .getElementById("products")
-    .scrollIntoView({
-      behavior: "smooth"
-    });
 
-    }
+  function showAllProducts() {
+
+    displayProducts(products);
+
+    document
+      .getElementById("products")
+      .scrollIntoView({
+        behavior: "smooth"
+      });
+
+  }
 
 
+  /* =========================
+     SEARCH
+  ========================= */
 
-      displayProducts(filteredProducts);
+  function searchProducts() {
 
-
+    const searchValue =
       document
-        .getElementById("products")
-        .scrollIntoView({
-          behavior: "smooth"
-        });
+        .getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
 
-    }
+    const filteredProducts =
+      products.filter(function(product) {
 
-  </script>
+        return product.name
+          .toLowerCase()
+          .includes(searchValue);
+
+      });
+
+    displayProducts(filteredProducts);
+
+  }
 
 
+  /* =========================
+     CATEGORY FILTER
+  ========================= */
+
+  function filterCategory(category) {
+
+    const filteredProducts =
+      products.filter(function(product) {
+
+        return product.category === category;
+
+      });
+
+    displayProducts(filteredProducts);
+
+    document
+      .getElementById("products")
+      .scrollIntoView({
+        behavior: "smooth"
+      });
+
+  }
+
+</script>
+
+
+      
 </body>
 </html>
