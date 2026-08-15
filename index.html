@@ -1,27 +1,330 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>فانوس طلایی ادگی</title>
 
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-  <style>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOxvYXy03Cq-saW3tinDwLLZRXNc--Fos",
+      authDomain: "fanous-talaei.firebaseapp.com",
+      projectId: "fanous-talaei",
+      storageBucket: "fanous-talaei.firebasestorage.app",
+      messagingSenderId: "1022498568704",
+      appId: "1:1022498568704:web:b4f3d8f75ff653d426b6e5",
+      measurementId: "G-KWHKHYLR5Z"
+    };
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // ========== Global State ==========
+    let allProducts = [];
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    let currentUser = null;
+
+    // ========== Load Products ==========
+    async function loadProducts() {
+      const snapshot = await getDocs(collection(db, "products"));
+      allProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      updateCartCount();
     }
 
+    // ========== Render Products ==========
+    function renderProducts(list) {
+      const container = document.getElementById("products-container");
+      if (!list || list.length === 0) {
+        container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#aaa;padding:40px 0">محصولی یافت نشد</p>`;
+        return;
+      }
 
+      container.innerHTML = list.map(p => `
+        <div class="product" onclick="openProduct('${p.id}')">
+          <div class="product-image">${p.image || "🔌"}</div>
+          <div class="product-info">
+            <div class="product-category">${p.category || ""}</div>
+            <h3>${p.name}</h3>
+            <div class="product-description">${p.description || ""}</div>
+            <div class="product-bottom">
+              <div class="price">${p.price} تومان</div>
+              <div class="availability">${p.stock > 0 ? "موجود" : "ناموجود"}</div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // ========== Categories ==========
+    window.filterCategory = function(cat) {
+      const filtered = allProducts.filter(p => p.category === cat);
+      renderProducts(filtered);
+      document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+    };
+
+    window.showAllProducts = function() {
+      renderProducts(allProducts);
+      document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+    };
+
+    // ========== Search ==========
+    window.searchProducts = function() {
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      if (!q) {
+        document.getElementById("products-container").innerHTML = "";
+        return;
+      }
+      const filtered = allProducts.filter(p =>
+        (p.name || "").toLowerCase().includes(q) ||
+        (p.category || "").toLowerCase().includes(q) ||
+        (p.description || "").toLowerCase().includes(q)
+      );
+      renderProducts(filtered);
+    };
+
+    // ========== Product Modal ==========
+    window.openProduct = function(id) {
+      const p = allProducts.find(x => x.id === id);
+      if (!p) return;
+
+      document.getElementById("modal-image").textContent = p.image || "🔌";
+      document.getElementById("modal-title").textContent = p.name;
+      document.getElementById("modal-desc").textContent = p.description || "";
+      document.getElementById("modal-price").textContent = p.price + " تومان";
+      document.getElementById("modal-stock").textContent = p.stock > 0 ? "موجود در انبار" : "ناموجود";
+      document.getElementById("add-cart-btn").onclick = () => addToCart(p);
+      document.getElementById("product-modal").classList.add("active");
+    };
+
+    window.closeProduct = function(e) {
+      if (!e || e.target.id === "product-modal" || e.target.classList.contains("product-modal-close")) {
+        document.getElementById("product-modal").classList.remove("active");
+      }
+    };
+
+    // ========== Cart ==========
+    function addToCart(product) {
+      const existing = cart.find(i => i.id === product.id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ ...product, qty: 1 });
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartCount();
+      closeProduct({ target: { id: "product-modal" } });
+      alert("محصول به سبد خرید اضافه شد");
+    }
+
+    function updateCartCount() {
+      const count = cart.reduce((s, i) => s + i.qty, 0);
+      document.getElementById("cart-count").textContent = count;
+    }
+
+    window.openCart = function() {
+      const body = document.getElementById("cart-body");
+      if (cart.length === 0) {
+        body.innerHTML = "<p style='text-align:center;color:#aaa;padding:30px 0'>سبد خرید خالی است</p>";
+      } else {
+        let total = 0;
+        body.innerHTML = cart.map((item, idx) => {
+          const priceNum = parseInt((item.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
+          total += priceNum * item.qty;
+          return `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #333">
+              <div>
+                <div style="font-weight:bold">${item.name}</div>
+                <div style="font-size:13px;color:#aaa">${item.price} × ${item.qty}</div>
+              </div>
+              <button onclick="removeFromCart(${idx})" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:18px">×</button>
+            </div>
+          `;
+        }).join("") + `
+          <div style="margin-top:20px;font-size:18px;font-weight:bold;color:var(--gold-light)">
+            جمع کل: ${total.toLocaleString("fa-IR")} تومان
+          </div>
+          <button onclick="openCheckout()" style="width:100%;margin-top:20px;padding:14px;background:var(--gold);border:none;border-radius:5px;font-weight:bold;cursor:pointer">
+            ثبت سفارش
+          </button>
+        `;
+      }
+      document.getElementById("cart-modal").classList.add("active");
+    };
+
+    window.removeFromCart = function(idx) {
+      cart.splice(idx, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartCount();
+      openCart();
+    };
+
+    window.closeCart = function(e) {
+      if (!e || e.target.id === "cart-modal") {
+        document.getElementById("cart-modal").classList.remove("active");
+      }
+    };
+
+    // ========== Checkout ==========
+    window.openCheckout = function() {
+      document.getElementById("cart-modal").classList.remove("active");
+      document.getElementById("checkout-modal").classList.add("active");
+    };
+
+    window.closeCheckout = function(e) {
+      if (!e || e.target.id === "checkout-modal") {
+        document.getElementById("checkout-modal").classList.remove("active");
+      }
+    };
+
+    window.submitOrder = async function() {
+      const name = document.getElementById("order-name").value.trim();
+      const phone = document.getElementById("order-phone").value.trim();
+      const address = document.getElementById("order-address").value.trim();
+      const postal = document.getElementById("order-postal").value.trim();
+      const note = document.getElementById("order-note").value.trim();
+
+      if (!name || !phone || !address) {
+        alert("لطفاً نام، تلفن و آدرس را پر کنید");
+        return;
+      }
+
+      const order = {
+        customerName: name,
+        customerPhone: phone,
+        address: address,
+        postalCode: postal,
+        note: note,
+        items: cart,
+        status: "جدید",
+        createdAt: new Date().toISOString(),
+        total: cart.reduce((s, i) => {
+          const p = parseInt((i.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
+          return s + p * i.qty;
+        }, 0)
+      };
+
+      try {
+        await addDoc(collection(db, "orders"), order);
+        cart = [];
+        localStorage.setItem("cart", "[]");
+        updateCartCount();
+        document.getElementById("checkout-modal").classList.remove("active");
+        document.getElementById("success-modal").classList.add("active");
+      } catch (err) {
+        console.error(err);
+        alert("خطا در ثبت سفارش. دوباره تلاش کنید.");
+      }
+    };
+
+    window.closeSuccess = function() {
+      document.getElementById("success-modal").classList.remove("active");
+    };
+
+    // ========== Admin ==========
+    window.openAdminLogin = function() {
+      document.getElementById("admin-login-modal").classList.add("active");
+    };
+
+    window.closeAdminLogin = function(e) {
+      if (!e || e.target.id === "admin-login-modal") {
+        document.getElementById("admin-login-modal").classList.remove("active");
+      }
+    };
+
+    window.adminLogin = async function() {
+      const email = document.getElementById("admin-email").value.trim();
+      const pass = document.getElementById("admin-pass").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        document.getElementById("admin-login-modal").classList.remove("active");
+        openAdminPanel();
+      } catch (err) {
+        alert("ایمیل یا رمز اشتباه است");
+      }
+    };
+
+    function openAdminPanel() {
+      document.getElementById("admin-panel").classList.add("active");
+      loadAdminOrders();
+      loadAdminProducts();
+    }
+
+    window.closeAdminPanel = function() {
+      document.getElementById("admin-panel").classList.remove("active");
+    };
+
+    window.adminLogout = async function() {
+      await signOut(auth);
+      closeAdminPanel();
+    };
+
+    async function loadAdminOrders() {
+      const snapshot = await getDocs(collection(db, "orders"));
+      const orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      const container = document.getElementById("admin-orders");
+      if (orders.length === 0) {
+        container.innerHTML = "<p style='color:#aaa'>سفارشی وجود ندارد</p>";
+        return;
+      }
+      container.innerHTML = orders.map(o => `
+        <div style="background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <strong>${o.customerName}</strong>
+            <span style="color:\( {o.status === 'ارسال شده' ? '#9fdb75' : '#f1cf58'}"> \){o.status}</span>
+          </div>
+          <div style="font-size:13px;color:#aaa;margin-bottom:6px">${o.customerPhone}</div>
+          <div style="font-size:13px;color:#ccc;margin-bottom:8px">${o.address} - کدپستی: ${o.postalCode || '-'}</div>
+          <div style="font-size:12px;color:#888;margin-bottom:10px">
+            ${o.items.map(i => i.name + ' × ' + i.qty).join(' | ')}
+          </div>
+          \( {o.status !== 'ارسال شده' ? `<button onclick="markShipped(' \){o.id}')" style="padding:6px 14px;background:#d6a928;border:none;border-radius:4px;cursor:pointer;font-size:12px">علامت به عنوان ارسال شده</button>` : ''}
+        </div>
+      `).join("");
+    }
+
+    window.markShipped = async function(id) {
+      await updateDoc(doc(db, "orders", id), { status: "ارسال شده" });
+      loadAdminOrders();
+    };
+
+    async function loadAdminProducts() {
+      const container = document.getElementById("admin-products");
+      container.innerHTML = allProducts.map(p => `
+        <div style="background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:bold">${p.name}</div>
+            <div style="font-size:12px;color:#aaa">${p.price} | موجودی: ${p.stock}</div>
+          </div>
+        </div>
+      `).join("") || "<p style='color:#aaa'>محصولی وجود ندارد</p>";
+    }
+
+    // ========== Init ==========
+    onAuthStateChanged(auth, user => {
+      currentUser = user;
+    });
+
+    loadProducts().then(() => {
+      // Products are hidden by default - only show on category/search
+      document.getElementById("products-container").innerHTML = `
+        <p style="grid-column:1/-1;text-align:center;color:#aaa;padding:50px 0">
+          برای مشاهده محصولات، روی یکی از دسته‌بندی‌ها کلیک کنید یا جستجو کنید
+        </p>
+      `;
+    });
+
+    // Make functions global
+    window.addToCart = addToCart;
+  </script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --black: #080808;
       --dark: #111111;
@@ -32,1985 +335,135 @@
       --white: #ffffff;
       --gray: #a9a9a9;
     }
-
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-
+    html { scroll-behavior: smooth; }
     body {
       background: var(--black);
       color: var(--white);
       font-family: Tahoma, Arial, sans-serif;
       line-height: 1.8;
     }
-
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-
-    /* =========================
-       HEADER
-    ========================= */
+    a { color: inherit; text-decoration: none; }
 
     header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-
-      background: rgba(8, 8, 8, 0.94);
-
-      border-bottom:
-        1px solid rgba(214, 169, 40, 0.25);
-
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,8,8,0.94);
+      border-bottom: 1px solid rgba(214,169,40,0.25);
       backdrop-filter: blur(12px);
     }
-
-
     .header-inner {
-      max-width: 1200px;
-      margin: auto;
-
-      padding: 17px 25px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 25px;
+      max-width: 1200px; margin: auto; padding: 17px 25px;
+      display: flex; align-items: center; justify-content: space-between; gap: 25px;
     }
-
-
-    /* =========================
-       LOGO
-    ========================= */
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-
+    .brand { display: flex; align-items: center; gap: 12px; }
     .logo-icon {
-      position: relative;
-
-      width: 32px;
-      height: 38px;
-
+      position: relative; width: 32px; height: 38px;
       border: 2px solid var(--gold-light);
-
-      border-radius:
-        5px 5px 8px 8px;
-
-      box-shadow:
-        0 0 8px rgba(241, 207, 88, 0.5),
-        0 0 20px rgba(241, 207, 88, 0.15);
+      border-radius: 5px 5px 8px 8px;
+      box-shadow: 0 0 8px rgba(241,207,88,0.5), 0 0 20px rgba(241,207,88,0.15);
     }
-
-
     .logo-icon::before {
-      content: "";
-
-      position: absolute;
-
-      width: 18px;
-      height: 7px;
-
-      border:
-        2px solid var(--gold-light);
-
-      border-bottom: none;
-
-      border-radius:
-        10px 10px 0 0;
-
-      top: -8px;
-      left: 5px;
+      content: ""; position: absolute; width: 18px; height: 7px;
+      border: 2px solid var(--gold-light); border-bottom: none;
+      border-radius: 10px 10px 0 0; top: -8px; left: 5px;
     }
-
-
     .logo-icon::after {
-      content: "✦";
-
-      position: absolute;
-
-      font-size: 15px;
-
-      color: var(--lemon);
-
-      left: 7px;
-      top: 7px;
-
-      text-shadow:
-        0 0 8px rgba(234, 255, 61, 0.8);
+      content: "✦"; position: absolute; font-size: 15px; color: var(--lemon);
+      left: 7px; top: 7px; text-shadow: 0 0 8px rgba(234,255,61,0.8);
     }
-
-
     .brand-name {
-      position: relative;
-
-      color: var(--gold-light);
-
-      font-size: 23px;
-
-      font-weight: bold;
-
-      letter-spacing: 0.5px;
-
-      white-space: nowrap;
-
-      text-shadow:
-        0 0 8px rgba(241, 207, 88, 0.25);
+      position: relative; color: var(--gold-light); font-size: 23px;
+      font-weight: bold; letter-spacing: 0.5px; white-space: nowrap;
+      text-shadow: 0 0 8px rgba(241,207,88,0.25);
     }
-
-
-    .brand-name::before {
-      content: "✦  ·  ✧";
-
-      position: absolute;
-
-      color: var(--lemon);
-
-      font-size: 10px;
-
-      right: -55px;
-      top: -13px;
-
-      opacity: 0.9;
-
-      text-shadow:
-        0 0 7px var(--lemon),
-        0 0 14px var(--lemon);
+    nav { display: flex; gap: 20px; color: #ddd; font-size: 14px; align-items: center; }
+    nav a { transition: 0.25s; }
+    nav a:hover { color: var(--lemon); }
+    .cart-btn {
+      background: none; border: 1px solid var(--gold); color: var(--gold-light);
+      padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 13px;
+      display: flex; align-items: center; gap: 6px;
     }
-
-
-    .brand-name::after {
-      content: "·  ✦";
-
-      position: absolute;
-
-      color: var(--gold-light);
-
-      font-size: 9px;
-
-      left: -35px;
-      bottom: -10px;
-
-      text-shadow:
-        0 0 7px var(--gold-light);
-    }
-
-
-    /* =========================
-       NAVIGATION
-    ========================= */
-
-    nav {
-      display: flex;
-
-      gap: 25px;
-
-      color: #ddd;
-
-      font-size: 14px;
-    }
-
-
-    nav a {
-      transition: 0.25s;
-    }
-
-
-    nav a:hover {
-      color: var(--lemon);
-    }
-
-
-    /* =========================
-       HERO
-    ========================= */
+    .cart-btn:hover { background: rgba(214,169,40,0.15); }
 
     .hero {
-      min-height: 530px;
-
-      display: flex;
-      align-items: center;
-
-      background:
-
-        radial-gradient(
-          circle at 20% 50%,
-          rgba(234,255,61,0.08),
-          transparent 30%
-        ),
-
-        radial-gradient(
-          circle at 80% 30%,
-          rgba(214,169,40,0.16),
-          transparent 35%
-        ),
-
-        linear-gradient(
-          135deg,
-          #070707,
-          #17130a
-        );
-
-      position: relative;
-
-      overflow: hidden;
+      min-height: 480px; display: flex; align-items: center;
+      background: radial-gradient(circle at 20% 50%, rgba(234,255,61,0.08), transparent 30%),
+                  radial-gradient(circle at 80% 30%, rgba(214,169,40,0.16), transparent 35%),
+                  linear-gradient(135deg, #070707, #17130a);
+      position: relative; overflow: hidden;
     }
-
-
-    .hero::before {
-      content: "✦   ·       ✧        ·   ✦";
-
-      position: absolute;
-
-      top: 70px;
-      left: 8%;
-
-      color: var(--gold-light);
-
-      font-size: 13px;
-
-      letter-spacing: 8px;
-
-      opacity: 0.7;
-
-      text-shadow:
-        0 0 8px var(--gold),
-        0 0 18px var(--gold);
-    }
-
-
-    .hero::after {
-      content: "·      ✦        ·     ✧";
-
-      position: absolute;
-
-      bottom: 65px;
-      right: 8%;
-
-      color: var(--lemon);
-
-      font-size: 11px;
-
-      letter-spacing: 9px;
-
-      opacity: 0.65;
-
-      text-shadow:
-        0 0 8px var(--lemon);
-    }
-
-
-    .hero-inner {
-      max-width: 1200px;
-
-      width: 100%;
-
-      margin: auto;
-
-      padding: 70px 25px;
-
-      position: relative;
-
-      z-index: 2;
-    }
-
-
-    .hero-small {
-      color: var(--lemon);
-
-      letter-spacing: 3px;
-
-      font-size: 13px;
-
-      margin-bottom: 15px;
-    }
-
-
-    .hero h1 {
-      font-size:
-        clamp(42px, 8vw, 78px);
-
-      line-height: 1.1;
-
-      color: var(--white);
-
-      margin-bottom: 20px;
-    }
-
-
-    .hero h1 span {
-      color: var(--gold-light);
-    }
-
-
-    .hero p {
-      max-width: 560px;
-
-      color: #c8c8c8;
-
-      font-size: 17px;
-
-      margin-bottom: 35px;
-    }
-
-
+    .hero-inner { max-width: 1200px; width: 100%; margin: auto; padding: 70px 25px; position: relative; z-index: 2; }
+    .hero-small { color: var(--lemon); letter-spacing: 3px; font-size: 13px; margin-bottom: 15px; }
+    .hero h1 { font-size: clamp(36px, 7vw, 68px); line-height: 1.1; margin-bottom: 20px; }
+    .hero h1 span { color: var(--gold-light); }
+    .hero p { max-width: 560px; color: #c8c8c8; font-size: 17px; margin-bottom: 35px; }
     .hero-button {
-      display: inline-block;
-
-      padding: 13px 28px;
-
-      background: var(--gold);
-
-      color: #111;
-
-      border-radius: 4px;
-
-      font-weight: bold;
-
-      transition: 0.3s;
+      display: inline-block; padding: 13px 28px; background: var(--gold); color: #111;
+      border-radius: 4px; font-weight: bold; transition: 0.3s;
     }
+    .hero-button:hover { background: var(--lemon); transform: translateY(-2px); }
 
+    .section { max-width: 1200px; margin: auto; padding: 75px 25px; }
+    .section-title { display: flex; justify-content: space-between; align-items: end; margin-bottom: 35px; gap: 20px; }
+    .section-title h2 { font-size: 30px; color: var(--gold-light); }
+    .section-title p { color: var(--gray); font-size: 13px; }
 
-    .hero-button:hover {
-      background: var(--lemon);
-
-      transform: translateY(-2px);
-    }
-
-
-    /* =========================
-       SECTIONS
-    ========================= */
-
-    .section {
-      max-width: 1200px;
-
-      margin: auto;
-
-      padding: 75px 25px;
-    }
-
-
-    .section-title {
-      display: flex;
-
-      justify-content: space-between;
-
-      align-items: end;
-
-      margin-bottom: 35px;
-
-      gap: 20px;
-    }
-
-
-    .section-title h2 {
-      font-size: 30px;
-
-      color: var(--gold-light);
-    }
-
-
-    .section-title p {
-      color: var(--gray);
-
-      font-size: 13px;
-    }
-
-
-    /* =========================
-       CATEGORIES
-    ========================= */
-
-    .categories {
-      display: grid;
-
-      grid-template-columns:
-        repeat(5, 1fr);
-
-      gap: 15px;
-    }
-
-
+    .categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
     .category {
-      min-height: 130px;
-
-      background:
-        linear-gradient(
-          145deg,
-          #181818,
-          #101010
-        );
-
-      border: 1px solid #292929;
-
-      display: flex;
-
-      justify-content: center;
-
-      align-items: center;
-
-      text-align: center;
-
-      border-radius: 6px;
-
-      transition: 0.3s;
-
-      cursor: pointer;
+      min-height: 110px; background: linear-gradient(145deg, #181818, #101010);
+      border: 1px solid #292929; display: flex; justify-content: center; align-items: center;
+      text-align: center; border-radius: 6px; transition: 0.3s; cursor: pointer; padding: 15px;
     }
+    .category:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(214,169,40,0.08); }
+    .category h3 { color: white; font-size: 15px; }
+    .category span { display: block; color: var(--lemon); font-size: 11px; margin-top: 5px; }
 
-
-    .category:hover {
-      border-color: var(--gold);
-
-      transform: translateY(-4px);
-
-      box-shadow:
-        0 10px 30px
-        rgba(214,169,40,0.08);
-    }
-
-
-    .category h3 {
-      color: white;
-
-      font-size: 17px;
-    }
-
-
-    .category span {
-      display: block;
-
-      color: var(--lemon);
-
-      font-size: 11px;
-
-      margin-top: 5px;
-    }
-
-
-    /* =========================
-       PRODUCTS
-    ========================= */
-
-    .products-section {
-      max-width: 1200px;
-
-      margin: auto;
-
-      padding: 0 25px 75px;
-    }
-
-
-    .search-box {
-      margin-bottom: 30px;
-    }
-
-
+    .products-section { max-width: 1200px; margin: auto; padding: 0 25px 75px; }
+    .search-box { margin-bottom: 30px; }
     .search-box input {
-      width: 100%;
-
-      background: #151515;
-
-      border: 1px solid #333;
-
-      color: white;
-
-      padding: 16px 20px;
-
-      border-radius: 5px;
-
-      outline: none;
-
-      font-family: inherit;
-
-      font-size: 14px;
+      width: 100%; background: #151515; border: 1px solid #333; color: white;
+      padding: 16px 20px; border-radius: 5px; outline: none; font-family: inherit; font-size: 14px;
     }
-
-
-    .search-box input:focus {
-      border-color: var(--gold);
-
-      box-shadow:
-        0 0 12px
-        rgba(214,169,40,0.1);
-    }
-
-
-    .products {
-      display: grid;
-
-      grid-template-columns:
-        repeat(4, 1fr);
-
-      gap: 20px;
-    }
-
-
+    .search-box input:focus { border-color: var(--gold); box-shadow: 0 0 12px rgba(214,169,40,0.1); }
+    .products { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
     .product {
-      background: #151515;
-
-      border: 1px solid #282828;
-
-      border-radius: 6px;
-
-      overflow: hidden;
-
-      transition: 0.3s;
-
-      cursor: pointer;
+      background: #151515; border: 1px solid #282828; border-radius: 6px; overflow: hidden;
+      transition: 0.3s; cursor: pointer;
     }
-
-
-    .product:hover {
-      transform: translateY(-5px);
-
-      border-color:
-        rgba(214,169,40,0.7);
-
-      box-shadow:
-        0 12px 30px
-        rgba(0,0,0,0.35);
-    }
-
-
+    .product:hover { transform: translateY(-5px); border-color: rgba(214,169,40,0.7); box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
     .product-image {
-      height: 220px;
-
-      background:
-
-        radial-gradient(
-          circle,
-          rgba(234,255,61,0.15),
-          transparent 25%
-        ),
-
-        linear-gradient(
-          145deg,
-          #232323,
-          #0d0d0d
-        );
-
-      display: flex;
-
-      justify-content: center;
-
-      align-items: center;
-
-      color: var(--gold-light);
-
-      font-size: 50px;
+      height: 180px; background: radial-gradient(circle, rgba(234,255,61,0.15), transparent 25%), linear-gradient(145deg, #232323, #0d0d0d);
+      display: flex; justify-content: center; align-items: center; color: var(--gold-light); font-size: 48px;
     }
+    .product-info { padding: 18px; }
+    .product-category { color: var(--lemon); font-size: 11px; margin-bottom: 5px; }
+    .product h3 { font-size: 15px; margin-bottom: 8px; }
+    .product-description { color: #999; font-size: 12px; min-height: 40px; }
+    .product-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; gap: 10px; }
+    .price { color: var(--gold-light); font-weight: bold; font-size: 14px; }
+    .availability { font-size: 10px; color: #9fdb75; }
 
-
-    .product-image img {
-      width: 100%;
-
-      height: 100%;
-
-      object-fit: contain;
+    /* Modals */
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none;
+      align-items: center; justify-content: center; padding: 20px; z-index: 1000; backdrop-filter: blur(8px);
     }
-
-
-    .product-info {
-      padding: 20px;
+    .modal.active { display: flex; }
+    .modal-content {
+      position: relative; width: 100%; max-width: 500px; background: #151515;
+      border: 1px solid rgba(214,169,40,0.5); border-radius: 8px; padding: 30px; max-height: 90vh; overflow-y: auto;
     }
-
-
-    .product-category {
-      color: var(--lemon);
-
-      font-size: 11px;
-
-      margin-bottom: 5px;
+    .modal-close {
+      position: absolute; top: 12px; right: 15px; width: 35px; height: 35px; border: none;
+      background: rgba(0,0,0,0.5); color: white; font-size: 25px; cursor: pointer; border-radius: 50%;
     }
+    .modal-close:hover { color: var(--lemon); }
 
-
-    .product h3 {
-      font-size: 16px;
-
-      margin-bottom: 10px;
-    }
-
-
-    .product-description {
-      color: #999;
-
-      font-size: 12px;
-
-      min-height: 45px;
-    }
-
-
-    .product-bottom {
-      display: flex;
-
-      justify-content: space-between;
-
-      align-items: center;
-
-      margin-top: 18px;
-
-      gap: 10px;
-    }
-
-
-    .price {
-      color: var(--gold-light);
-
-      font-weight: bold;
-
-      font-size: 15px;
-    }
-
-
-    .availability {
-      font-size: 10px;
-
-      color: #9fdb75;
-    }
-
-
-    /* =========================
-       PRODUCT MODAL
-    ========================= */
-
-    .product-modal {
-      position: fixed;
-
-      inset: 0;
-
-      background:
-        rgba(0, 0, 0, 0.75);
-
-      display: none;
-
-      align-items: center;
-
-      justify-content: center;
-
-      padding: 20px;
-
-      z-index: 1000;
-
-      backdrop-filter: blur(8px);
-    }
-
-
-    .product-modal.active {
-      display: flex;
-    }
-
-
-    .product-modal-content {
-      position: relative;
-
-      width: 100%;
-
-      max-width: 850px;
-
-      background: #151515;
-
-      border:
-        1px solid
-        rgba(214,169,40,0.5);
-
-      border-radius: 8px;
-
-      display: grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
-      overflow: hidden;
-
-      box-shadow:
-        0 20px 70px
-        rgba(0,0,0,0.6);
-    }
-
-
-    .product-modal-close {
-      position: absolute;
-
-      top: 12px;
-
-      right: 15px;
-
-      width: 35px;
-
-      height: 35px;
-
-      border: none;
-
-      background:
-        rgba(0,0,0,0.5);
-
-      color: white;
-
-      font-size: 25px;
-
-      cursor: pointer;
-
-      border-radius: 50%;
-
-      z-index: 2;
-    }
-
-
-    .product-modal-close:hover {
-      color: var(--lemon);
-    }
-
-
+    .product-modal-content { max-width: 800px; display: grid; grid-template-columns: 1fr 1fr; padding: 0; overflow: hidden; }
     .product-modal-image {
-      min-height: 420px;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      font-size: 100px;
-
-      background:
-
-        radial-gradient(
-          circle,
-          rgba(234,169,61,0.15),
-          transparent 30%
-        ),
-
-        linear-gradient(
-          145deg,
-          #232323,
-          #0d0d0d
-        );
+      min-height: 350px; display: flex; align-items: center; justify-content: center; font-size: 90px;
+      background: radial-gradient(circle, rgba(234,169,61,0.15), transparent 30%), linear-gradient(145deg, #232323, #0d0d0d);
     }
-
-
-    .product-modal-image img {
-      width: 100%;
-
-      height: 100%;
-
-      object-fit: contain;
-    }
-
-
-    .product-modal-info {
-      padding: 50px 35px;
-
-      display: flex;
-
-      flex-direction: column;
-
-      justify-content: center;
-    }
-
-
-    .product-modal-info h2 {
-      color: white;
-
-      font-size: 28px;
-
-      margin-bottom: 15px;
-    }
-
-
-    .product-modal-description {
-      color: #aaa;
-
-      font-size: 14px;
-
-      line-height: 2;
-
-      margin-bottom: 25px;
-    }
-
-
-    .product-modal-price {
-      color: var(--gold-light);
-
-      font-size: 23px;
-
-      font-weight: bold;
-
-      margin-bottom: 10px;
-    }
-
-
-    .product-modal-stock {
-      color: #9fdb75;
-
-      font-size: 13px;
-
-      margin-bottom: 25px;
-    }
-
-
-    .add-to-cart-button {
-      width: 100%;
-
-      padding: 14px;
-
-      border: none;
-
-      border-radius: 5px;
-
-      background: var(--gold);
-
-      color: #111;
-
-      font-family: inherit;
-
-      font-weight: bold;
-
-      font-size: 14px;
-
-      cursor: pointer;
-
-      transition: 0.3s;
-    }
-
-
-    .add-to-cart-button:hover {
-      background: var(--lemon);
-
-      transform: translateY(-2px);
-    }
-
-
-    /* =========================
-       ABOUT
-    ========================= */
-
-    .about {
-      background: #111;
-
-      border-top:
-        1px solid #222;
-
-      border-bottom:
-        1px solid #222;
-    }
-
-
-    .about-inner {
-      max-width: 850px;
-
-      margin: auto;
-
-      padding: 80px 25px;
-
-      text-align: center;
-    }
-
-
-    .about-inner h2 {
-      color: var(--gold-light);
-
-      margin-bottom: 20px;
-
-      font-size: 30px;
-    }
-
-
-    .about-inner p {
-      color: #aaa;
-
-      font-size: 15px;
-    }
-
-
-    /* =========================
-       CONTACT
-    ========================= */
-
-    .contact {
-      max-width: 900px;
-
-      margin: auto;
-
-      padding: 75px 25px;
-
-      text-align: center;
-    }
-
-
-    .contact h2 {
-      color: var(--gold-light);
-
-      font-size: 30px;
-
-      margin-bottom: 35px;
-    }
-
-
-    .contact-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(2, 1fr);
-
-      gap: 20px;
-    }
-
-
-    .contact-card {
-      background: #141414;
-
-      border: 1px solid #292929;
-
-      border-radius: 7px;
-
-      padding: 25px;
-
-      transition: 0.3s;
-    }
-
-
-    .contact-card:hover {
-      border-color: var(--gold);
-
-      box-shadow:
-        0 0 25px
-        rgba(214,169,40,0.08);
-    }
-
-
-    .contact-card .icon {
-      color: var(--lemon);
-
-      font-size: 25px;
-
-      margin-bottom: 10px;
-
-      text-shadow:
-        0 0 10px
-        rgba(234,255,61,0.4);
-    }
-
-
-    .contact-card h3 {
-      color: var(--gold-light);
-
-      font-size: 16px;
-
-      margin-bottom: 8px;
-    }
-
-
-    .contact-card p {
-      color: #aaa;
-
-      font-size: 14px;
-
-      line-height: 2;
-    }
-
-
-    .phone-number {
-      direction: ltr;
-
-      display: block;
-
-      color: white;
-    }
-
-
-    /* =========================
-       FOOTER
-    ========================= */
-
-    footer {
-      padding: 45px 25px;
-
-      text-align: center;
-
-      background: #080808;
-
-      border-top:
-        1px solid
-        rgba(214,169,40,0.15);
-    }
-
-
-    footer .footer-logo {
-      color: var(--gold-light);
-
-      font-size: 22px;
-
-      margin-bottom: 10px;
-
-      text-shadow:
-        0 0 8px
-        rgba(241,207,88,0.2);
-    }
-
-
-    footer p {
-      color: #777;
-
-      font-size: 12px;
-    }
-
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 1000px) {
-
-      .categories {
-        grid-template-columns:
-          repeat(3, 1fr);
-      }
-
-    }
-
-
-    @media (max-width: 850px) {
-
-      nav {
-        display: none;
-      }
-
-
-      .categories {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-
-      .products {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-
-      .product-image {
-        height: 180px;
-      }
-
-
-      .contact-grid {
-        grid-template-columns: 1fr;
-      }
-
-
-      .product-modal-content {
-        grid-template-columns: 1fr;
-
-        max-height: 90vh;
-
-        overflow-y: auto;
-      }
-
-
-      .product-modal-image {
-        min-height: 250px;
-      }
-
-
-      .product-modal-info {
-        padding: 30px 25px;
-      }
-
-    }
-
-
-    @media (max-width: 500px) {
-
-      .header-inner {
-        padding: 15px 18px;
-      }
-
-
-      .brand-name {
-        font-size: 18px;
-      }
-
-
-      .logo-icon {
-        width: 28px;
-
-        height: 34px;
-      }
-
-
-      .hero {
-        min-height: 470px;
-      }
-
-
-      .hero-inner {
-        padding: 55px 20px;
-      }
-
-
-      .section {
-        padding: 55px 20px;
-      }
-
-
-      .products-section {
-        padding:
-          0 20px 55px;
-      }
-
-
-      .products {
-        grid-template-columns: 1fr;
-      }
-
-
-      .categories {
-        grid-template-columns:
-          1fr 1fr;
-      }
-
-
-      .product-image {
-        height: 210px;
-      }
-
-
-      .section-title {
-        display: block;
-      }
-
-
-      .section-title p {
-        margin-top: 7px;
-      }
-
-
-      .brand-name::before {
-        right: -35px;
-
-        font-size: 8px;
-      }
-
-
-      .brand-name::after {
-        display: none;
-      }
-
-
-      .contact {
-        padding: 55px 20px;
-      }
-
-    }
-
-  </style>
-
-</head>
-
-
-<body>
-
-
-  <!-- =========================
-       HEADER
-  ========================= -->
-
-  <header>
-
-    <div class="header-inner">
-
-      <a href="#home" class="brand">
-
-        <div class="logo-icon"></div>
-
-        <div class="brand-name">
-          فانوس طلایی ادگی
-        </div>
-
-      </a>
-
-
-      <nav>
-
-        <a href="#home">
-          خانه
-        </a>
-
-        <a href="#categories">
-          دسته‌بندی
-        </a>
-
-        <a href="#products">
-          محصولات
-        </a>
-
-        <a href="#about">
-          درباره ما
-        </a>
-
-        <a href="#contact">
-          تماس با ما
-        </a>
-
-      </nav>
-
-    </div>
-
-  </header>
-
-
-
-  <!-- =========================
-       HERO
-  ========================= -->
-
-  <section
-    class="hero"
-    id="home"
-  >
-
-    <div class="hero-inner">
-
-      <div class="hero-small">
-        GOLDEN LANTERN
-      </div>
-
-
-      <h1>
-
-        روشنایی
-
-        <br>
-
-        <span>
-          با کیفیت متفاوت
-        </span>
-
-      </h1>
-
-
-      <p>
-
-        مجموعه‌ای از محصولات روشنایی
-        و لوازم برقی برای خانه‌ها،
-        فروشگاه‌ها و فضاهای مدرن.
-
-      </p>
-
-
-      <a
-        class="hero-button"
-        href="#products"
-      >
-        مشاهده محصولات
-      </a>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- =========================
-       CATEGORIES
-  ========================= -->
-
-  <section
-    class="section"
-    id="categories"
-  >
-
-    <div class="section-title">
-
-      <div>
-
-        <h2>
-          دسته‌بندی محصولات
-        </h2>
-
-        <p>
-          محصول مورد نیازت را پیدا کن
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <div class="categories">
-
-
-      <div
-        class="category"
-        onclick="filterCategory('لامپ')"
-      >
-
-        <div>
-
-          <h3>
-            لامپ‌ها
-          </h3>
-
-          <span>
-            LIGHT BULBS
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="category"
-        onclick="filterCategory('چراغ')"
-      >
-
-        <div>
-
-          <h3>
-            چراغ‌ها
-          </h3>
-
-          <span>
-            LIGHTS
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="category"
-        onclick="filterCategory('لوستر')"
-      >
-
-        <div>
-
-          <h3>
-            لوستر
-          </h3>
-
-          <span>
-            CHANDELIERS
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="category"
-        onclick="filterCategory('لوازم برقی')"
-      >
-
-        <div>
-
-          <h3>
-            لوازم برقی
-          </h3>
-
-          <span>
-            ELECTRICAL
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="category"
-        onclick="showAllProducts()"
-      >
-
-        <div>
-
-          <h3>
-            همه محصولات
-          </h3>
-
-          <span>
-            ALL PRODUCTS
-          </span>
-
-        </div>
-
-      </div>
-
-
-    </div>
-
-  </section>
-
-
-
-  <!-- =========================
-       PRODUCTS
-  ========================= -->
-
-  <section
-    class="products-section"
-    id="products"
-  >
-
-    <div class="section-title">
-
-      <div>
-
-        <h2>
-          محصولات
-        </h2>
-
-        <p>
-          محصولات فانوس طلایی ادگی
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <!-- SEARCH -->
-
-    <div class="search-box">
-
-      <input
-        type="text"
-        id="search"
-        placeholder="جستجوی محصول..."
-        oninput="searchProducts()"
-      >
-
-    </div>
-
-
-    <!-- PRODUCTS CONTAINER -->
-
-    <div
-      class="products"
-      id="products-container"
-    ></div>
-
-  </section>
-
-
-
-  <!-- =========================
-       PRODUCT MODAL
-  ========================= -->
-
-  <div
-    id="product-modal"
-    class="product-modal"
-    onclick="closeProduct(event)"
-  >
-
-    <div
-      class="product-modal-content"
-      onclick="event.stopPropagation()"
-    >
-
-      <button
-        class="product-modal-close"
-        onclick="closeProduct()"
-      >
-        ×
-      </button>
-
-
-    <div
-        class="product-modal-image"
-        id="modal-image"
-      >
-        💡
-      </div>
-
-
-      <div class="product-modal-info">
-
-        <div
-          class="product-category"
-          id="modal-category"
-        ></div>
-
-
-        <h2
-          id="modal-name"
-        ></h2>
-
-
-        <p
-          class="product-modal-description"
-          id="modal-description"
-        ></p>
-
-
-        <div
-          class="product-modal-price"
-          id="modal-price"
-        ></div>
-
-
-        <div
-          class="product-modal-stock"
-          id="modal-stock"
-        ></div>
-
-
-        <button
-          class="add-to-cart-button"
-          onclick="addToCart()"
-        >
-          افزودن به سبد خرید
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-
-  <!-- =========================
-       ABOUT
-  ========================= -->
-
-  <section
-    class="about"
-    id="about"
-  >
-
-    <div class="about-inner">
-
-      <h2>
-        فانوس طلایی ادگی
-      </h2>
-
-
-      <p>
-
-        ما در فانوس طلایی تلاش می‌کنیم
-        محصولات روشنایی و لوازم برقی
-        باکیفیت و کاربردی را با انتخابی
-        متنوع در اختیار شما قرار دهیم.
-
-        برای ما، نور فقط روشنایی نیست؛
-        بخشی از زیبایی فضاست.
-
-      </p>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- =========================
-       CONTACT
-  ========================= -->
-
-  <section
-    class="contact"
-    id="contact"
-  >
-
-    <h2>
-      اطلاعات تماس
-    </h2>
-
-
-    <div class="contact-grid">
-
-
-      <div class="contact-card">
-
-        <div class="icon">
-          ☎
-        </div>
-
-
-        <h3>
-          تماس با ما
-        </h3>
-
-
-        <p>
-
-          <span class="phone-number">
-            ۰۹۱۲۲۳۷۸۵۷۷
-          </span>
-
-
-          <span class="phone-number">
-            ۰۹۱۲۴۳۰۳۸۰۴
-          </span>
-
-        </p>
-
-      </div>
-
-
-
-      <div class="contact-card">
-
-        <div class="icon">
-          ✦
-        </div>
-
-
-        <h3>
-          آدرس فروشگاه
-        </h3>
-
-
-        <p>
-
-          پرند، فاز صفر،
-          بلوار چهارباغ امام خمینی،
-          نبش نقش جهان ۲،
-          مجتمع تجاری پارادیس،
-          طبقه همکف، واحد ۲۸
-
-        </p>
-
-      </div>
-
-
-    </div>
-
-  </section>
-
-
-
-  <!-- =========================
-       FOOTER
-  ========================= -->
-
-  <footer>
-
-    <div class="footer-logo">
-      فانوس طلایی ادگی
-    </div>
-
-
-    <p>
-      تجهیزات روشنایی و لوازم برقی
-    </p>
-
-  </footer>
-
-
-
-  <!-- =========================
-       PRODUCTS DATABASE
-  ========================= -->
-
-  <script src="products.js"></script>
-
-
-
-  <!-- =========================
-       JAVASCRIPT
-  ========================= -->
-
-  <script>
-
-    const container =
-      document.getElementById(
-        "products-container"
-      );
-
-
-    let selectedProduct = null;
-
-
-    /* =========================
-       DISPLAY PRODUCTS
-    ========================= */
-
-    function displayProducts(list) {
-
-      container.innerHTML = "";
-
-
-      list.forEach(product => {
-
-        const card =
-          document.createElement("div");
-
-
-        card.className = "product";
-
-
-        card.dataset.name =
-          product.name;
-
-
-        card.innerHTML = `
-
-          <div class="product-image">
-            ${product.image}
-          </div>
-
-
-          <div class="product-info">
-
-            <div class="product-category">
-              ${product.category}
-            </div>
-
-
-            <h3>
-              ${product.name}
-            </h3>
-
-
-            <div class="product-description">
-              ${product.description}
-            </div>
-
-
-            <div class="product-bottom">
-
-              <div class="price">
-                ${product.price} تومان
-              </div>
-
-
-              <div class="availability">
-                ${
-                  product.stock > 0
-                    ? "موجود"
-                    : "ناموجود"
-                }
-              </div>
-
-            </div>
-
-          </div>
-
-        `;
-
-
-        card.addEventListener(
-          "click",
-          function() {
-            openProduct(product);
-          }
-        );
-
-
-        container.appendChild(card);
-
-      });
-
-    }
-
-
-    /* =========================
-       SEARCH
-    ========================= */
-
-    function searchProducts() {
-
-      const searchInput =
-        document.getElementById("search");
-
-
-      const searchValue =
-        searchInput.value
-          .toLowerCase()
-          .trim();
-
-
-      const filtered =
-        products.filter(product => {
-
-          return product.name
-            .toLowerCase()
-            .includes(searchValue);
-
-        });
-
-
-      displayProducts(filtered);
-
-    }
-
-
-    /* =========================
-       CATEGORY FILTER
-    ========================= */
-
-    function filterCategory(category) {
-
-      const filtered =
-        products.filter(product => {
-
-          return product.category === category;
-
-        });
-
-
-      displayProducts(filtered);
-
-
-      document
-        .getElementById("products")
-        .scrollIntoView({
-          behavior: "smooth"
-        });
-
-    }
-
-
-    /* =========================
-       SHOW ALL PRODUCTS
-    ========================= */
-
-    function showAllProducts() {
-
-      document.getElementById("search").value = "";
-
-      displayProducts(products);
-
-
-      document
-        .getElementById("products")
-        .scrollIntoView({
-          behavior: "smooth"
-        });
-
-    }
-
-
-    /* =========================
-       OPEN PRODUCT
-    ========================= */
-
-    function openProduct(product) {
-
-      selectedProduct = product;
-
-
-      document.getElementById(
-        "modal-name"
-      ).textContent =
-        product.name;
-
-
-      document.getElementById(
-        "modal-category"
-      ).textContent =
-        product.category;
-
-
-      document.getElementById(
-        "modal-description"
-      ).textContent =
-        product.description;
-
-
-      document.getElementById(
-        "modal-price"
-      ).textContent =
-        product.price + " تومان";
-
-
-      document.getElementById(
-        "modal-stock"
-      ).textContent =
-        product.stock > 0
-          ? "موجود در انبار"
-          : "ناموجود";
-
-
-      document.getElementById(
-        "modal-image"
-      ).innerHTML =
-        product.image;
-
-
-      document
-        .getElementById("product-modal")
-        .classList.add("active");
-
-    }
-
-
-    /* =========================
-       CLOSE PRODUCT
-    ========================= */
-
-    function closeProduct(event) {
-
-      if (
-        event &&
-        event.target !== event.currentTarget
-      ) {
-        return;
-      }
-
-
-      document
-        .getElementById("product-modal")
-        .classList.remove("active");
-
-    }
-
-
-    /* =========================
-       ADD TO CART
-    ========================= */
-
-    function addToCart() {
-
-      if (!selectedProduct) {
-        return;
-      }
-
-
-      if (selectedProduct.stock <= 0) {
-
-        alert(
-          "این محصول در حال حاضر ناموجود است."
-        );
-
-        return;
-      }
-
-
-      alert(
-        "محصول به سبد خرید اضافه شد."
-      );
-
-    }
-
-
-    /* =========================
-       INITIAL PRODUCTS
-    ========================= */
-
-    displayProducts(products);
-
-  </script>
-
-
-</body>
-
-</html>
+    .product-modal-info { padding: 40px 30px; display: flex; flex-direction: column; justify-content: center; }
+    .product-modal-info h2 { font-size: 24px; margin-bottom: 12px; }
+    .product-modal-description { color: #aaa; font-size:
