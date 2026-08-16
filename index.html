@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>فانوس طلایی ادگی</title>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -25,43 +24,42 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // ========== Global State ==========
     let allProducts = [];
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
     let currentUser = null;
 
-    // ========== Load Products ==========
     async function loadProducts() {
-      const snapshot = await getDocs(collection(db, "products"));
-      allProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      updateCartCount();
+      try {
+        const snapshot = await getDocs(collection(db, "products"));
+        allProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        updateCartCount();
+      } catch (e) {
+        console.error("خطا در بارگذاری محصولات:", e);
+      }
     }
 
-    // ========== Render Products ==========
     function renderProducts(list) {
       const container = document.getElementById("products-container");
       if (!list || list.length === 0) {
-        container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#aaa;padding:40px 0">محصولی یافت نشد</p>`;
+        container.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#aaa;padding:40px 0">محصولی یافت نشد</p>';
         return;
       }
-
       container.innerHTML = list.map(p => `
         <div class="product" onclick="openProduct('${p.id}')">
           <div class="product-image">${p.image || "🔌"}</div>
           <div class="product-info">
             <div class="product-category">${p.category || ""}</div>
-            <h3>${p.name}</h3>
+            <h3>${p.name || ""}</h3>
             <div class="product-description">${p.description || ""}</div>
             <div class="product-bottom">
-              <div class="price">${p.price} تومان</div>
-              <div class="availability">${p.stock > 0 ? "موجود" : "ناموجود"}</div>
+              <div class="price">${p.price || ""} تومان</div>
+              <div class="availability">${(p.stock || 0) > 0 ? "موجود" : "ناموجود"}</div>
             </div>
           </div>
         </div>
       `).join("");
     }
 
-    // ========== Categories ==========
     window.filterCategory = function(cat) {
       const filtered = allProducts.filter(p => p.category === cat);
       renderProducts(filtered);
@@ -73,11 +71,10 @@
       document.getElementById("products").scrollIntoView({ behavior: "smooth" });
     };
 
-    // ========== Search ==========
     window.searchProducts = function() {
       const q = document.getElementById("search").value.trim().toLowerCase();
       if (!q) {
-        document.getElementById("products-container").innerHTML = "";
+        document.getElementById("products-container").innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#aaa;padding:50px 0">برای مشاهده محصولات، روی یکی از دسته‌بندی‌ها کلیک کنید یا جستجو کنید</p>';
         return;
       }
       const filtered = allProducts.filter(p =>
@@ -88,17 +85,15 @@
       renderProducts(filtered);
     };
 
-    // ========== Product Modal ==========
     window.openProduct = function(id) {
       const p = allProducts.find(x => x.id === id);
       if (!p) return;
-
       document.getElementById("modal-image").textContent = p.image || "🔌";
-      document.getElementById("modal-title").textContent = p.name;
+      document.getElementById("modal-title").textContent = p.name || "";
       document.getElementById("modal-desc").textContent = p.description || "";
-      document.getElementById("modal-price").textContent = p.price + " تومان";
-      document.getElementById("modal-stock").textContent = p.stock > 0 ? "موجود در انبار" : "ناموجود";
-      document.getElementById("add-cart-btn").onclick = () => addToCart(p);
+      document.getElementById("modal-price").textContent = (p.price || "") + " تومان";
+      document.getElementById("modal-stock").textContent = (p.stock || 0) > 0 ? "موجود در انبار" : "ناموجود";
+      document.getElementById("add-cart-btn").onclick = function() { addToCart(p); };
       document.getElementById("product-modal").classList.add("active");
     };
 
@@ -108,51 +103,52 @@
       }
     };
 
-    // ========== Cart ==========
     function addToCart(product) {
       const existing = cart.find(i => i.id === product.id);
       if (existing) {
         existing.qty += 1;
       } else {
-        cart.push({ ...product, qty: 1 });
+        cart.push({ id: product.id, name: product.name, price: product.price, image: product.image, qty: 1 });
       }
       localStorage.setItem("cart", JSON.stringify(cart));
       updateCartCount();
-      closeProduct({ target: { id: "product-modal" } });
+      document.getElementById("product-modal").classList.remove("active");
       alert("محصول به سبد خرید اضافه شد");
     }
 
     function updateCartCount() {
-      const count = cart.reduce((s, i) => s + i.qty, 0);
-      document.getElementById("cart-count").textContent = count;
+      const count = cart.reduce((s, i) => s + (i.qty || 0), 0);
+      const el = document.getElementById("cart-count");
+      if (el) el.textContent = count;
     }
 
     window.openCart = function() {
       const body = document.getElementById("cart-body");
       if (cart.length === 0) {
-        body.innerHTML = "<p style='text-align:center;color:#aaa;padding:30px 0'>سبد خرید خالی است</p>";
+        body.innerHTML = '<p style="text-align:center;color:#aaa;padding:30px 0">سبد خرید خالی است</p>';
       } else {
         let total = 0;
-        body.innerHTML = cart.map((item, idx) => {
-          const priceNum = parseInt((item.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
-          total += priceNum * item.qty;
-          return `
+        let html = "";
+        cart.forEach((item, idx) => {
+          const priceNum = parseInt(String(item.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
+          total += priceNum * (item.qty || 1);
+          html += `
             <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #333">
               <div>
                 <div style="font-weight:bold">${item.name}</div>
                 <div style="font-size:13px;color:#aaa">${item.price} × ${item.qty}</div>
               </div>
               <button onclick="removeFromCart(${idx})" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:18px">×</button>
-            </div>
-          `;
-        }).join("") + `
-          <div style="margin-top:20px;font-size:18px;font-weight:bold;color:var(--gold-light)">
+            </div>`;
+        });
+        html += `
+          <div style="margin-top:20px;font-size:18px;font-weight:bold;color:#f1cf58">
             جمع کل: ${total.toLocaleString("fa-IR")} تومان
           </div>
-          <button onclick="openCheckout()" style="width:100%;margin-top:20px;padding:14px;background:var(--gold);border:none;border-radius:5px;font-weight:bold;cursor:pointer">
+          <button onclick="openCheckout()" style="width:100%;margin-top:20px;padding:14px;background:#d6a928;border:none;border-radius:5px;font-weight:bold;cursor:pointer;color:#111">
             ثبت سفارش
-          </button>
-        `;
+          </button>`;
+        body.innerHTML = html;
       }
       document.getElementById("cart-modal").classList.add("active");
     };
@@ -170,7 +166,6 @@
       }
     };
 
-    // ========== Checkout ==========
     window.openCheckout = function() {
       document.getElementById("cart-modal").classList.remove("active");
       document.getElementById("checkout-modal").classList.add("active");
@@ -204,8 +199,8 @@
         status: "جدید",
         createdAt: new Date().toISOString(),
         total: cart.reduce((s, i) => {
-          const p = parseInt((i.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
-          return s + p * i.qty;
+          const p = parseInt(String(i.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
+          return s + p * (i.qty || 1);
         }, 0)
       };
 
@@ -226,7 +221,6 @@
       document.getElementById("success-modal").classList.remove("active");
     };
 
-    // ========== Admin ==========
     window.openAdminLogin = function() {
       document.getElementById("admin-login-modal").classList.add("active");
     };
@@ -272,20 +266,24 @@
         container.innerHTML = "<p style='color:#aaa'>سفارشی وجود ندارد</p>";
         return;
       }
-      container.innerHTML = orders.map(o => `
-        <div style="background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-            <strong>${o.customerName}</strong>
-            <span style="color:\( {o.status === 'ارسال شده' ? '#9fdb75' : '#f1cf58'}"> \){o.status}</span>
-          </div>
-          <div style="font-size:13px;color:#aaa;margin-bottom:6px">${o.customerPhone}</div>
-          <div style="font-size:13px;color:#ccc;margin-bottom:8px">${o.address} - کدپستی: ${o.postalCode || '-'}</div>
-          <div style="font-size:12px;color:#888;margin-bottom:10px">
-            ${o.items.map(i => i.name + ' × ' + i.qty).join(' | ')}
-          </div>
-          \( {o.status !== 'ارسال شده' ? `<button onclick="markShipped(' \){o.id}')" style="padding:6px 14px;background:#d6a928;border:none;border-radius:4px;cursor:pointer;font-size:12px">علامت به عنوان ارسال شده</button>` : ''}
-        </div>
-      `).join("");
+      container.innerHTML = orders.map(o => {
+        const statusColor = o.status === "ارسال شده" ? "#9fdb75" : "#f1cf58";
+        const itemsText = (o.items || []).map(i => (i.name || "") + " × " + (i.qty || 1)).join(" | ");
+        const btn = o.status !== "ارسال شده"
+          ? `<button onclick="markShipped('${o.id}')" style="padding:6px 14px;background:#d6a928;border:none;border-radius:4px;cursor:pointer;font-size:12px;color:#111">علامت به عنوان ارسال شده</button>`
+          : "";
+        return `
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <strong>${o.customerName || ""}</strong>
+              <span style="color:\( {statusColor}"> \){o.status || ""}</span>
+            </div>
+            <div style="font-size:13px;color:#aaa;margin-bottom:6px">${o.customerPhone || ""}</div>
+            <div style="font-size:13px;color:#ccc;margin-bottom:8px">${o.address || ""} - کدپستی: ${o.postalCode || "-"}</div>
+            <div style="font-size:12px;color:#888;margin-bottom:10px">${itemsText}</div>
+            ${btn}
+          </div>`;
+      }).join("");
     }
 
     window.markShipped = async function(id) {
@@ -295,175 +293,378 @@
 
     async function loadAdminProducts() {
       const container = document.getElementById("admin-products");
+      if (!allProducts.length) {
+        container.innerHTML = "<p style='color:#aaa'>محصولی وجود ندارد</p>";
+        return;
+      }
       container.innerHTML = allProducts.map(p => `
-        <div style="background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-weight:bold">${p.name}</div>
-            <div style="font-size:12px;color:#aaa">${p.price} | موجودی: ${p.stock}</div>
-          </div>
+        <div style="background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:12px;margin-bottom:8px">
+          <div style="font-weight:bold">${p.name || ""}</div>
+          <div style="font-size:12px;color:#aaa">${p.price || ""} | موجودی: ${p.stock || 0}</div>
         </div>
-      `).join("") || "<p style='color:#aaa'>محصولی وجود ندارد</p>";
+      `).join("");
     }
 
-    // ========== Init ==========
     onAuthStateChanged(auth, user => {
       currentUser = user;
     });
 
     loadProducts().then(() => {
-      // Products are hidden by default - only show on category/search
       document.getElementById("products-container").innerHTML = `
         <p style="grid-column:1/-1;text-align:center;color:#aaa;padding:50px 0">
           برای مشاهده محصولات، روی یکی از دسته‌بندی‌ها کلیک کنید یا جستجو کنید
-        </p>
-      `;
+        </p>`;
     });
 
-    // Make functions global
     window.addToCart = addToCart;
   </script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black: #080808;
-      --dark: #111111;
-      --dark2: #181818;
-      --gold: #d6a928;
-      --gold-light: #f1cf58;
-      --lemon: #eaff3d;
-      --white: #ffffff;
-      --gray: #a9a9a9;
+      --black: #080808; --gold: #d6a928; --gold-light: #f1cf58; --lemon: #eaff3d; --white: #fff; --gray: #a9a9a9;
     }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--black);
-      color: var(--white);
-      font-family: Tahoma, Arial, sans-serif;
-      line-height: 1.8;
-    }
+    body { background: var(--black); color: var(--white); font-family: Tahoma, Arial, sans-serif; line-height: 1.8; }
     a { color: inherit; text-decoration: none; }
 
     header {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(8,8,8,0.94);
-      border-bottom: 1px solid rgba(214,169,40,0.25);
-      backdrop-filter: blur(12px);
+      background: rgba(8,8,8,0.94); border-bottom: 1px solid rgba(214,169,40,0.25); backdrop-filter: blur(12px);
     }
     .header-inner {
       max-width: 1200px; margin: auto; padding: 17px 25px;
-      display: flex; align-items: center; justify-content: space-between; gap: 25px;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .logo-icon {
-      position: relative; width: 32px; height: 38px;
-      border: 2px solid var(--gold-light);
-      border-radius: 5px 5px 8px 8px;
-      box-shadow: 0 0 8px rgba(241,207,88,0.5), 0 0 20px rgba(241,207,88,0.15);
+      position: relative; width: 32px; height: 38px; border: 2px solid var(--gold-light);
+      border-radius: 5px 5px 8px 8px; box-shadow: 0 0 8px rgba(241,207,88,0.5);
     }
     .logo-icon::before {
-      content: ""; position: absolute; width: 18px; height: 7px;
-      border: 2px solid var(--gold-light); border-bottom: none;
-      border-radius: 10px 10px 0 0; top: -8px; left: 5px;
+      content: ""; position: absolute; width: 18px; height: 7px; border: 2px solid var(--gold-light);
+      border-bottom: none; border-radius: 10px 10px 0 0; top: -8px; left: 5px;
     }
     .logo-icon::after {
-      content: "✦"; position: absolute; font-size: 15px; color: var(--lemon);
-      left: 7px; top: 7px; text-shadow: 0 0 8px rgba(234,255,61,0.8);
+      content: "✦"; position: absolute; font-size: 15px; color: var(--lemon); left: 7px; top: 7px;
     }
-    .brand-name {
-      position: relative; color: var(--gold-light); font-size: 23px;
-      font-weight: bold; letter-spacing: 0.5px; white-space: nowrap;
-      text-shadow: 0 0 8px rgba(241,207,88,0.25);
-    }
-    nav { display: flex; gap: 20px; color: #ddd; font-size: 14px; align-items: center; }
-    nav a { transition: 0.25s; }
+    .brand-name { color: var(--gold-light); font-size: 22px; font-weight: bold; }
+    nav { display: flex; gap: 18px; color: #ddd; font-size: 14px; align-items: center; flex-wrap: wrap; }
     nav a:hover { color: var(--lemon); }
     .cart-btn {
       background: none; border: 1px solid var(--gold); color: var(--gold-light);
-      padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 13px;
-      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;
     }
-    .cart-btn:hover { background: rgba(214,169,40,0.15); }
 
     .hero {
-      min-height: 480px; display: flex; align-items: center;
+      min-height: 450px; display: flex; align-items: center;
       background: radial-gradient(circle at 20% 50%, rgba(234,255,61,0.08), transparent 30%),
                   radial-gradient(circle at 80% 30%, rgba(214,169,40,0.16), transparent 35%),
                   linear-gradient(135deg, #070707, #17130a);
-      position: relative; overflow: hidden;
     }
-    .hero-inner { max-width: 1200px; width: 100%; margin: auto; padding: 70px 25px; position: relative; z-index: 2; }
+    .hero-inner { max-width: 1200px; width: 100%; margin: auto; padding: 60px 25px; }
     .hero-small { color: var(--lemon); letter-spacing: 3px; font-size: 13px; margin-bottom: 15px; }
-    .hero h1 { font-size: clamp(36px, 7vw, 68px); line-height: 1.1; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(32px, 7vw, 60px); line-height: 1.15; margin-bottom: 18px; }
     .hero h1 span { color: var(--gold-light); }
-    .hero p { max-width: 560px; color: #c8c8c8; font-size: 17px; margin-bottom: 35px; }
+    .hero p { max-width: 520px; color: #c8c8c8; font-size: 16px; margin-bottom: 30px; }
     .hero-button {
-      display: inline-block; padding: 13px 28px; background: var(--gold); color: #111;
-      border-radius: 4px; font-weight: bold; transition: 0.3s;
+      display: inline-block; padding: 12px 26px; background: var(--gold); color: #111;
+      border-radius: 4px; font-weight: bold;
     }
-    .hero-button:hover { background: var(--lemon); transform: translateY(-2px); }
 
-    .section { max-width: 1200px; margin: auto; padding: 75px 25px; }
-    .section-title { display: flex; justify-content: space-between; align-items: end; margin-bottom: 35px; gap: 20px; }
-    .section-title h2 { font-size: 30px; color: var(--gold-light); }
+    .section { max-width: 1200px; margin: auto; padding: 60px 25px; }
+    .section-title { margin-bottom: 30px; }
+    .section-title h2 { font-size: 28px; color: var(--gold-light); }
     .section-title p { color: var(--gray); font-size: 13px; }
 
-    .categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+    .categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
     .category {
-      min-height: 110px; background: linear-gradient(145deg, #181818, #101010);
+      min-height: 100px; background: linear-gradient(145deg, #181818, #101010);
       border: 1px solid #292929; display: flex; justify-content: center; align-items: center;
-      text-align: center; border-radius: 6px; transition: 0.3s; cursor: pointer; padding: 15px;
+      text-align: center; border-radius: 6px; cursor: pointer; padding: 12px; transition: 0.25s;
     }
-    .category:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(214,169,40,0.08); }
-    .category h3 { color: white; font-size: 15px; }
-    .category span { display: block; color: var(--lemon); font-size: 11px; margin-top: 5px; }
+    .category:hover { border-color: var(--gold); transform: translateY(-3px); }
+    .category h3 { color: white; font-size: 14px; }
+    .category span { display: block; color: var(--lemon); font-size: 11px; margin-top: 4px; }
 
-    .products-section { max-width: 1200px; margin: auto; padding: 0 25px 75px; }
-    .search-box { margin-bottom: 30px; }
+    .products-section { max-width: 1200px; margin: auto; padding: 0 25px 60px; }
+    .search-box { margin-bottom: 25px; }
     .search-box input {
       width: 100%; background: #151515; border: 1px solid #333; color: white;
-      padding: 16px 20px; border-radius: 5px; outline: none; font-family: inherit; font-size: 14px;
+      padding: 14px 18px; border-radius: 5px; outline: none; font-family: inherit; font-size: 14px;
     }
-    .search-box input:focus { border-color: var(--gold); box-shadow: 0 0 12px rgba(214,169,40,0.1); }
-    .products { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
     .product {
-      background: #151515; border: 1px solid #282828; border-radius: 6px; overflow: hidden;
-      transition: 0.3s; cursor: pointer;
+      background: #151515; border: 1px solid #282828; border-radius: 6px; overflow: hidden; cursor: pointer; transition: 0.25s;
     }
-    .product:hover { transform: translateY(-5px); border-color: rgba(214,169,40,0.7); box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
+    .product:hover { transform: translateY(-4px); border-color: rgba(214,169,40,0.7); }
     .product-image {
-      height: 180px; background: radial-gradient(circle, rgba(234,255,61,0.15), transparent 25%), linear-gradient(145deg, #232323, #0d0d0d);
-      display: flex; justify-content: center; align-items: center; color: var(--gold-light); font-size: 48px;
+      height: 160px; background: linear-gradient(145deg, #232323, #0d0d0d);
+      display: flex; justify-content: center; align-items: center; font-size: 42px; color: var(--gold-light);
     }
-    .product-info { padding: 18px; }
-    .product-category { color: var(--lemon); font-size: 11px; margin-bottom: 5px; }
-    .product h3 { font-size: 15px; margin-bottom: 8px; }
-    .product-description { color: #999; font-size: 12px; min-height: 40px; }
-    .product-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; gap: 10px; }
-    .price { color: var(--gold-light); font-weight: bold; font-size: 14px; }
+    .product-info { padding: 16px; }
+    .product-category { color: var(--lemon); font-size: 11px; margin-bottom: 4px; }
+    .product h3 { font-size: 14px; margin-bottom: 6px; }
+    .product-description { color: #999; font-size: 12px; min-height: 36px; }
+    .product-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+    .price { color: var(--gold-light); font-weight: bold; font-size: 13px; }
     .availability { font-size: 10px; color: #9fdb75; }
 
-    /* Modals */
     .modal {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none;
-      align-items: center; justify-content: center; padding: 20px; z-index: 1000; backdrop-filter: blur(8px);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.78); display: none;
+      align-items: center; justify-content: center; padding: 16px; z-index: 1000;
     }
     .modal.active { display: flex; }
     .modal-content {
-      position: relative; width: 100%; max-width: 500px; background: #151515;
-      border: 1px solid rgba(214,169,40,0.5); border-radius: 8px; padding: 30px; max-height: 90vh; overflow-y: auto;
+      position: relative; width: 100%; max-width: 480px; background: #151515;
+      border: 1px solid rgba(214,169,40,0.45); border-radius: 8px; padding: 28px; max-height: 90vh; overflow-y: auto;
     }
     .modal-close {
-      position: absolute; top: 12px; right: 15px; width: 35px; height: 35px; border: none;
-      background: rgba(0,0,0,0.5); color: white; font-size: 25px; cursor: pointer; border-radius: 50%;
+      position: absolute; top: 10px; right: 12px; width: 34px; height: 34px; border: none;
+      background: rgba(0,0,0,0.5); color: white; font-size: 22px; cursor: pointer; border-radius: 50%;
     }
-    .modal-close:hover { color: var(--lemon); }
-
-    .product-modal-content { max-width: 800px; display: grid; grid-template-columns: 1fr 1fr; padding: 0; overflow: hidden; }
+    .product-modal-content { max-width: 760px; display: grid; grid-template-columns: 1fr 1fr; padding: 0; overflow: hidden; }
     .product-modal-image {
-      min-height: 350px; display: flex; align-items: center; justify-content: center; font-size: 90px;
-      background: radial-gradient(circle, rgba(234,169,61,0.15), transparent 30%), linear-gradient(145deg, #232323, #0d0d0d);
+      min-height: 320px; display: flex; align-items: center; justify-content: center; font-size: 80px;
+      background: linear-gradient(145deg, #232323, #0d0d0d);
     }
-    .product-modal-info { padding: 40px 30px; display: flex; flex-direction: column; justify-content: center; }
-    .product-modal-info h2 { font-size: 24px; margin-bottom: 12px; }
-    .product-modal-description { color: #aaa; font-size:
+    .product-modal-info { padding: 35px 28px; }
+    .product-modal-info h2 { font-size: 22px; margin-bottom: 10px; }
+    .product-modal-description { color: #aaa; font-size: 14px; margin-bottom: 18px; }
+    .product-modal-price { color: var(--gold-light); font-size: 20px; font-weight: bold; margin-bottom: 6px; }
+    .product-modal-stock { color: #9fdb75; font-size: 13px; margin-bottom: 22px; }
+    .add-to-cart-button, .submit-btn {
+      width: 100%; padding: 13px; border: none; border-radius: 5px; background: var(--gold);
+      color: #111; font-family: inherit; font-weight: bold; font-size: 14px; cursor: pointer;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; margin-bottom: 5px; font-size: 13px; color: #ccc; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 11px; background: #1a1a1a; border: 1px solid #333; border-radius: 5px;
+      color: white; font-family: inherit; font-size: 14px; outline: none;
+    }
+
+    .about { background: #111; border-top: 1px solid #222; border-bottom: 1px solid #222; }
+    .about-inner { max-width: 800px; margin: auto; padding: 70px 25px; text-align: center; }
+      .about-inner h2 { color: var(--gold-light); margin-bottom: 16px; font-size: 28px; }
+    .about-inner p { color: #aaa; font-size: 15px; }
+
+    .contact { max-width: 900px; margin: auto; padding: 60px 25px; text-align: center; }
+    .contact h2 { color: var(--gold-light); font-size: 28px; margin-bottom: 30px; }
+    .contact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .contact-card { background: #141414; border: 1px solid #292929; border-radius: 7px; padding: 22px; }
+    .contact-card .icon { color: var(--lemon); font-size: 24px; margin-bottom: 8px; }
+    .contact-card h3 { color: var(--gold-light); font-size: 15px; margin-bottom: 6px; }
+    .contact-card p { color: #aaa; font-size: 14px; }
+
+    footer { padding: 40px 25px; text-align: center; background: #080808; border-top: 1px solid rgba(214,169,40,0.15); }
+    footer .footer-logo { color: var(--gold-light); font-size: 20px; margin-bottom: 8px; }
+    footer p { color: #777; font-size: 12px; }
+
+    .admin-panel {
+      position: fixed; inset: 0; background: #0a0a0a; z-index: 2000; display: none; overflow-y: auto; padding: 25px;
+    }
+    .admin-panel.active { display: block; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px; }
+    .admin-header h2 { color: var(--gold-light); }
+
+    @media (max-width: 850px) {
+      .products { grid-template-columns: repeat(2, 1fr); }
+      .product-modal-content { grid-template-columns: 1fr; }
+      nav a { display: none; }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 500px) {
+      .products { grid-template-columns: 1fr; }
+      .categories { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="#home" class="brand">
+        <div class="logo-icon"></div>
+        <div class="brand-name">فانوس طلایی ادگی</div>
+      </a>
+      <nav>
+        <a href="#home">خانه</a>
+        <a href="#categories">دسته‌بندی</a>
+        <a href="#products">محصولات</a>
+        <a href="#about">درباره ما</a>
+        <a href="#contact">تماس</a>
+        <button class="cart-btn" onclick="openCart()">سبد خرید <span id="cart-count">0</span></button>
+        <button class="cart-btn" onclick="openAdminLogin()" style="border-color:#555;color:#aaa">ورود ادمین</button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <div class="hero-small">GOLDEN LANTERN</div>
+      <h1>روشنایی<br><span>با کیفیت متفاوت</span></h1>
+      <p>مجموعه‌ای از سیم و کابل و لوازم برقی با کیفیت برای خانه‌ها، فروشگاه‌ها و پروژه‌های ساختمانی.</p>
+      <a class="hero-button" href="#categories">مشاهده دسته‌بندی‌ها</a>
+    </div>
+  </section>
+
+  <section class="section" id="categories">
+    <div class="section-title">
+      <div>
+        <h2>دسته‌بندی محصولات</h2>
+        <p>روی دسته مورد نظر کلیک کنید</p>
+      </div>
+    </div>
+    <div class="categories">
+      <div class="category" onclick="filterCategory('سیم افشان')"><div><h3>سیم افشان</h3><span>FLEXIBLE</span></div></div>
+      <div class="category" onclick="filterCategory('سیم ارت')"><div><h3>سیم ارت</h3><span>EARTH</span></div></div>
+      <div class="category" onclick="filterCategory('سیم نایلون')"><div><h3>سیم نایلون</h3><span>NYLON</span></div></div>
+      <div class="category" onclick="filterCategory('سیم مفتول')"><div><h3>سیم مفتول</h3><span>SOLID</span></div></div>
+      <div class="category" onclick="filterCategory('کابل افشان')"><div><h3>کابل افشان</h3><span>FLEX CABLE</span></div></div>
+      <div class="category" onclick="filterCategory('کابل مفتول')"><div><h3>کابل مفتول</h3><span>SOLID CABLE</span></div></div>
+      <div class="category" onclick="filterCategory('کابل آلومینیوم')"><div><h3>کابل آلومینیوم</h3><span>ALUMINUM</span></div></div>
+      <div class="category" onclick="filterCategory('کابل شیلدار')"><div><h3>کابل شیلدار</h3><span>SHIELDED</span></div></div>
+      <div class="category" onclick="filterCategory('کابل زوجی')"><div><h3>کابل زوجی</h3><span>TWISTED</span></div></div>
+      <div class="category" onclick="showAllProducts()"><div><h3>همه محصولات</h3><span>ALL</span></div></div>
+    </div>
+  </section>
+
+  <section class="products-section" id="products">
+    <div class="section-title">
+      <div>
+        <h2>محصولات</h2>
+        <p>جستجو یا انتخاب دسته</p>
+      </div>
+    </div>
+    <div class="search-box">
+      <input type="text" id="search" placeholder="جستجوی محصول..." oninput="searchProducts()">
+    </div>
+    <div class="products" id="products-container"></div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="about-inner">
+      <h2>درباره فانوس طلایی ادگی</h2>
+      <p>ما با تمرکز بر کیفیت و قیمت مناسب، انواع سیم و کابل و لوازم برقی را برای مشتریان عزیز فراهم می‌کنیم.</p>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <h2>تماس با ما</h2>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="icon">📞</div>
+        <h3>تلفن</h3>
+        <p>۰۹۱۲۲۳۷۸۵۷۷</p>
+      </div>
+      <div class="contact-card">
+        <div class="icon">📍</div>
+        <h3>آدرس</h3>
+        <p>ایران</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">فانوس طلایی ادگی</div>
+    <p>© ۱۴۰۴ - تمامی حقوق محفوظ است</p>
+  </footer>
+
+  <!-- Product Modal -->
+  <div id="product-modal" class="modal" onclick="closeProduct(event)">
+    <div class="modal-content product-modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close product-modal-close" onclick="closeProduct()">×</button>
+      <div class="product-modal-image" id="modal-image">🔌</div>
+      <div class="product-modal-info">
+        <h2 id="modal-title"></h2>
+        <div class="product-modal-description" id="modal-desc"></div>
+        <div class="product-modal-price" id="modal-price"></div>
+        <div class="product-modal-stock" id="modal-stock"></div>
+        <button class="add-to-cart-button" id="add-cart-btn">افزودن به سبد خرید</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div id="cart-modal" class="modal" onclick="closeCart(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeCart()">×</button>
+      <h2 style="color:#f1cf58;margin-bottom:18px">سبد خرید</h2>
+      <div id="cart-body"></div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="modal" onclick="closeCheckout(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeCheckout()">×</button>
+      <h2 style="color:#f1cf58;margin-bottom:18px">ثبت سفارش</h2>
+      <div class="form-group">
+        <label>نام و نام خانوادگی *</label>
+        <input type="text" id="order-name" placeholder="نام کامل">
+      </div>
+      <div class="form-group">
+        <label>شماره تماس *</label>
+        <input type="text" id="order-phone" placeholder="۰۹۱۲xxxxxxx">
+      </div>
+      <div class="form-group">
+        <label>آدرس کامل *</label>
+        <textarea id="order-address" rows="3" placeholder="استان، شهر، خیابان، پلاک..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>کد پستی</label>
+        <input type="text" id="order-postal" placeholder="کد پستی ۱۰ رقمی">
+      </div>
+      <div class="form-group">
+        <label>توضیحات (اختیاری)</label>
+        <textarea id="order-note" rows="2"></textarea>
+      </div>
+      <button class="submit-btn" onclick="submitOrder()">ثبت نهایی سفارش</button>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="success-modal" class="modal">
+    <div class="modal-content" style="text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">✅</div>
+      <h2 style="color:#f1cf58;margin-bottom:12px">سفارش شما ثبت شد</h2>
+      <p style="color:#aaa;margin-bottom:22px">به زودی با شما تماس گرفته می‌شود.</p>
+      <button class="submit-btn" onclick="closeSuccess()">باشه</button>
+    </div>
+  </div>
+
+  <!-- Admin Login -->
+  <div id="admin-login-modal" class="modal" onclick="closeAdminLogin(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeAdminLogin()">×</button>
+      <h2 style="color:#f1cf58;margin-bottom:18px">ورود ادمین</h2>
+      <div class="form-group">
+        <label>ایمیل</label>
+        <input type="email" id="admin-email" placeholder="ایمیل ادمین">
+      </div>
+      <div class="form-group">
+        <label>رمز عبور</label>
+        <input type="password" id="admin-pass" placeholder="رمز عبور">
+      </div>
+      <button class="submit-btn" onclick="adminLogin()">ورود</button>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin-panel" class="admin-panel">
+    <div class="admin-header">
+      <h2>پنل مدیریت</h2>
+      <div>
+        <button class="cart-btn" onclick="adminLogout()" style="margin-left:8px">خروج</button>
+        <button class="cart-btn" onclick="closeAdminPanel()">بستن</button>
+      </div>
+    </div>
+    <h3 style="color:#f1cf58;margin-bottom:12px">سفارش‌ها</h3>
+    <div id="admin-orders" style="margin-bottom:35px"></div>
+    <h3 style="color:#f1cf58;margin-bottom:12px">محصولات فعلی</h3>
+    <div id="admin-products"></div>
+  </div>
+
+</body>
+</html>
