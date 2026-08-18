@@ -29,28 +29,14 @@
     let currentUser = null;
     const CARD_NUMBER = "6037-9988-0035-6619";
 
-    // ========== Load Products ==========
     async function loadProducts() {
       try {
         const snapshot = await getDocs(collection(db, "products"));
         allProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         updateCartCount();
-        renderCategoryButtons();
       } catch (e) {
         console.error(e);
       }
-    }
-
-    function renderCategoryButtons() {
-      const cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
-      const container = document.getElementById("dynamic-categories");
-      if (!container) return;
-      let html = cats.map(c => `
-        <div class="category" onclick="filterCategory('${c}')">
-          <div><h3>${c}</h3><span>CATEGORY</span></div>
-        </div>`).join("");
-      html += `<div class="category" onclick="showAllProducts()"><div><h3>همه محصولات</h3><span>ALL</span></div></div>`;
-      container.innerHTML = html;
     }
 
     function renderProducts(list) {
@@ -132,40 +118,55 @@
       if (el) el.textContent = count;
     }
 
+    function calcTotal() {
+      return cart.reduce((s, i) => {
+        const p = parseInt(String(i.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
+        return s + p * (i.qty || 1);
+      }, 0);
+    }
+
     window.openCart = function() {
       const body = document.getElementById("cart-body");
       if (cart.length === 0) {
         body.innerHTML = '<p style="text-align:center;color:#aaa;padding:30px 0">سبد خرید خالی است</p>';
       } else {
-        let total = 0;
         let html = "";
         cart.forEach((item, idx) => {
-          const priceNum = parseInt(String(item.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
-          total += priceNum * (item.qty || 1);
           html += `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #333">
-              <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #333;gap:10px">
+              <div style="flex:1">
                 <div style="font-weight:bold">${item.name}</div>
-                <div style="font-size:13px;color:#aaa">${item.price} × ${item.qty}</div>
+                <div style="font-size:13px;color:#aaa">${item.price} تومان</div>
               </div>
-              <button onclick="removeFromCart(${idx})" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:18px">×</button>
+              <div style="display:flex;align-items:center;gap:8px">
+                <button onclick="changeQty(${idx},-1)" style="width:28px;height:28px;border:1px solid #555;background:#222;color:#fff;border-radius:4px;cursor:pointer">−</button>
+                <span style="min-width:20px;text-align:center">${item.qty}</span>
+                <button onclick="changeQty(${idx},1)" style="width:28px;height:28px;border:1px solid #555;background:#222;color:#fff;border-radius:4px;cursor:pointer">+</button>
+              </div>
             </div>`;
         });
+        const total = calcTotal();
         html += `
-          <div style="margin-top:20px;font-size:18px;font-weight:bold;color:#f1cf58">جمع کل: ${total.toLocaleString("fa-IR")} تومان</div>
-          <button onclick="openCheckout()" style="width:100%;margin-top:20px;padding:14px;background:#d6a928;border:none;border-radius:5px;font-weight:bold;cursor:pointer;color:#111">ثبت سفارش و پرداخت</button>`;
+          <div style="margin-top:20px;font-size:18px;font-weight:bold;color:#f1cf58;text-align:center">
+            جمع کل: ${total.toLocaleString("fa-IR")} تومان
+          </div>
+          <button onclick="openCheckout()" style="width:100%;margin-top:20px;padding:14px;background:#d6a928;border:none;border-radius:5px;font-weight:bold;cursor:pointer;color:#111">
+            ثبت سفارش و پرداخت
+          </button>`;
         body.innerHTML = html;
       }
       document.getElementById("cart-modal").classList.add("active");
     };
 
-    window.removeFromCart = function(idx) {
-      cart.splice(idx, 1);
+    window.changeQty = function(idx, delta) {
+      cart[idx].qty += delta;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
       localStorage.setItem("cart", JSON.stringify(cart));
       updateCartCount();
       openCart();
     };
-window.closeCart = function(e) {
+
+    window.closeCart = function(e) {
       if (!e || e.target.id === "cart-modal") document.getElementById("cart-modal").classList.remove("active");
     };
 
@@ -181,8 +182,7 @@ window.closeCart = function(e) {
     function generateOrderCode() {
       return "ORD-" + Math.floor(1000 + Math.random() * 9000);
     }
-
-    window.submitOrder = async function() {
+window.submitOrder = async function() {
       const name = document.getElementById("order-name").value.trim();
       const phone = document.getElementById("order-phone").value.trim();
       const address = document.getElementById("order-address").value.trim();
@@ -194,11 +194,7 @@ window.closeCart = function(e) {
         return;
       }
 
-      const total = cart.reduce((s, i) => {
-        const p = parseInt(String(i.price || "0").replace(/,/g, "").replace(/[^\d]/g, "")) || 0;
-        return s + p * (i.qty || 1);
-      }, 0);
-
+      const total = calcTotal();
       const orderCode = generateOrderCode();
 
       const order = {
@@ -221,7 +217,6 @@ window.closeCart = function(e) {
         updateCartCount();
         document.getElementById("checkout-modal").classList.remove("active");
 
-        // Show payment info
         document.getElementById("pay-code").textContent = orderCode;
         document.getElementById("pay-amount").textContent = total.toLocaleString("fa-IR") + " تومان";
         document.getElementById("pay-card").textContent = CARD_NUMBER;
@@ -236,7 +231,6 @@ window.closeCart = function(e) {
       document.getElementById("success-modal").classList.remove("active");
     };
 
-    // ========== Admin ==========
     window.openAdminLogin = function() {
       document.getElementById("admin-login-modal").classList.add("active");
     };
@@ -271,7 +265,8 @@ window.closeCart = function(e) {
       await signOut(auth);
       closeAdminPanel();
     };
-async function loadAdminOrders() {
+
+    async function loadAdminOrders() {
       const snapshot = await getDocs(collection(db, "orders"));
       const orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
       const container = document.getElementById("admin-orders");
@@ -328,8 +323,7 @@ async function loadAdminOrders() {
           </div>
         </div>`).join("");
     }
-
-    window.editProduct = function(id) {
+window.editProduct = function(id) {
       const p = allProducts.find(x => x.id === id);
       if (!p) return;
       document.getElementById("edit-id").value = p.id;
@@ -374,11 +368,8 @@ async function loadAdminOrders() {
         return;
       }
       try {
-        if (id) {
-          await updateDoc(doc(db, "products", id), data);
-        } else {
-          await addDoc(collection(db, "products"), data);
-        }
+        if (id) await updateDoc(doc(db, "products", id), data);
+        else await addDoc(collection(db, "products"), data);
         closeProductForm();
         await loadProducts();
         loadAdminProducts();
@@ -495,7 +486,7 @@ async function loadAdminOrders() {
 </head>
 <body>
   <header>
-    <div class="header-inner">
+      <div class="header-inner">
       <a href="#home" class="brand">
         <div class="logo-icon"></div>
         <div class="brand-name">فانوس طلایی ادگی</div>
@@ -521,14 +512,26 @@ async function loadAdminOrders() {
     </div>
   </section>
 
-    <section class="section" id="categories">
+  <section class="section" id="categories">
     <div class="section-title">
       <div>
         <h2>دسته‌بندی محصولات</h2>
         <p>روی دسته مورد نظر کلیک کنید</p>
       </div>
     </div>
-    <div class="categories" id="dynamic-categories"></div>
+    <div class="categories">
+      <div class="category" onclick="filterCategory('سیم افشان')"><div><h3>سیم افشان</h3><span>FLEXIBLE</span></div></div>
+      <div class="category" onclick="filterCategory('سیم ارت')"><div><h3>سیم ارت</h3><span>EARTH</span></div></div>
+      <div class="category" onclick="filterCategory('سیم نایلون')"><div><h3>سیم نایلون</h3><span>NYLON</span></div></div>
+      <div class="category" onclick="filterCategory('سیم مفتول')"><div><h3>سیم مفتول</h3><span>SOLID</span></div></div>
+      <div class="category" onclick="filterCategory('کابل افشان')"><div><h3>کابل افشان</h3><span>FLEX CABLE</span></div></div>
+      <div class="category" onclick="filterCategory('کابل مفتول')"><div><h3>کابل مفتول</h3><span>SOLID CABLE</span></div></div>
+      <div class="category" onclick="filterCategory('کابل آلومینیوم')"><div><h3>کابل آلومینیوم</h3><span>ALUMINUM</span></div></div>
+      <div class="category" onclick="filterCategory('کابل شیلدار')"><div><h3>کابل شیلدار</h3><span>SHIELDED</span></div></div>
+      <div class="category" onclick="filterCategory('کابل زوجی')"><div><h3>کابل زوجی</h3><span>TWISTED</span></div></div>
+      <div class="category" onclick="filterCategory('CCS')"><div><h3>CCS</h3><span>CCS</span></div></div>
+      <div class="category" onclick="showAllProducts()"><div><h3>همه محصولات</h3><span>ALL</span></div></div>
+    </div>
   </section>
 
   <section class="products-section" id="products">
@@ -572,7 +575,6 @@ async function loadAdminOrders() {
     <p>© ۱۴۰۴ - تمامی حقوق محفوظ است</p>
   </footer>
 
-  <!-- Product Modal -->
   <div id="product-modal" class="modal" onclick="closeProduct(event)">
     <div class="modal-content product-modal-content" onclick="event.stopPropagation()">
       <button class="modal-close product-modal-close" onclick="closeProduct()">×</button>
@@ -587,7 +589,6 @@ async function loadAdminOrders() {
     </div>
   </div>
 
-  <!-- Cart Modal -->
   <div id="cart-modal" class="modal" onclick="closeCart(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeCart()">×</button>
@@ -596,7 +597,6 @@ async function loadAdminOrders() {
     </div>
   </div>
 
-    <!-- Checkout Modal -->
   <div id="checkout-modal" class="modal" onclick="closeCheckout(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeCheckout()">×</button>
@@ -610,7 +610,6 @@ async function loadAdminOrders() {
     </div>
   </div>
 
-  <!-- Success / Payment Modal -->
   <div id="success-modal" class="modal">
     <div class="modal-content" style="text-align:center;max-width:520px">
       <div style="font-size:48px;margin-bottom:12px">✅</div>
@@ -631,7 +630,6 @@ async function loadAdminOrders() {
     </div>
   </div>
 
-  <!-- Admin Login -->
   <div id="admin-login-modal" class="modal" onclick="closeAdminLogin(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeAdminLogin()">×</button>
@@ -642,7 +640,6 @@ async function loadAdminOrders() {
     </div>
   </div>
 
-  <!-- Admin Panel -->
   <div id="admin-panel" class="admin-panel">
     <div class="admin-header">
       <h2>پنل مدیریت</h2>
@@ -658,18 +655,17 @@ async function loadAdminOrders() {
     <div id="admin-products"></div>
   </div>
 
-  <!-- Product Form Modal (Add / Edit) -->
   <div id="product-form-modal" class="modal">
     <div class="modal-content" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeProductForm()">×</button>
       <h2 id="product-form-title" style="color:#f1cf58;margin-bottom:18px">افزودن محصول</h2>
       <input type="hidden" id="edit-id">
       <div class="form-group"><label>نام محصول *</label><input type="text" id="edit-name"></div>
-      <div class="form-group"><label>دسته‌بندی *</label><input type="text" id="edit-category" placeholder="مثلاً سیم افشان"></div>
+      <div class="form-group"><label>دسته‌بندی *</label><input type="text" id="edit-category" placeholder="مثلاً سیم افشان یا دسته جدید"></div>
       <div class="form-group"><label>قیمت *</label><input type="text" id="edit-price" placeholder="مثلاً ۴,۳۷۵,۴۰۰"></div>
       <div class="form-group"><label>موجودی</label><input type="number" id="edit-stock" value="50"></div>
       <div class="form-group"><label>توضیحات</label><textarea id="edit-description" rows="2"></textarea></div>
-      <div class="form-group"><label>آیکون / تصویر</label><input type="text" id="edit-image" value="🔌"></div>
+      <div class="form-group"><label>آیکون</label><input type="text" id="edit-image" value="🔌"></div>
       <button class="submit-btn" onclick="saveProduct()">ذخیره</button>
     </div>
   </div>
